@@ -1,0 +1,29 @@
+version: "3"
+services:
+    database:
+        image: "postgres"
+        container_name: weborchestra-postgres
+        ports:
+            - 15432:5432
+        environment:
+            - POSTGRES_USER=adm_weborchestra
+            - POSTGRES_PASSWORD=adm_weborchestra_pwd
+            - POSTGRES_DB=weborchestra
+        volumes:
+            - weborchestra-postgres-data:/var/lib/postgresql/data/
+    pgadmin:
+        image: dpage/pgadmin4
+        container_name: weborchestra-pgadmin
+        ports:
+            - 8080:80
+        links:
+            - database
+        environment:
+            - PGADMIN_DEFAULT_EMAIL=admin@purbeurre.db
+            - PGADMIN_DEFAULT_PASSWORD=adm_purbeurre
+        volumes:
+            - weborchestra-pgadmin-data:/var/lib/pgadmin
+
+volumes:
+    weborchestra-postgres-data:
+    weborchestra-pgadmin-data:

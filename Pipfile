@@ -8,6 +8,7 @@ verify_ssl = true
 [packages]
 django = "==3.0.9"
 selenium = "*"
+psycopg2-binary = "*"
 
 [requires]
 python_version = "3.8"
