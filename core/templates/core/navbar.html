@@ -1,0 +1,46 @@
+{% load static %}
+<nav id="menu" class="navbar">
+    <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="btn btn-navbar navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse"><i class="fa fa-bars"></i></button>
+            <a class="navbar-brand" href="#">
+                <img src="{% static 'core/images/logo.png' %}" width="250px"/>
+            </a>
+        </div>
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="index.html">Home</a></li>
+                <li><a href="single.html">About Us</a></li>
+                <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Category <i class="fa fa-chevron-down"></i></a>
+                    <div class="dropdown-menu" style="margin-left: -203.625px;">
+                        <div class="dropdown-inner">
+                            <ul class="list-unstyled">
+                                <li><a href="archive.html">Text 301</a></li>
+                                <li><a href="archive.html">Text 302</a></li>
+                                <li><a href="archive.html">Text 303</a></li>
+                                <li><a href="archive.html">Text 304</a></li>
+                                <li><a href="archive.html">Text 305</a></li>
+                            </ul>
+                            <ul class="list-unstyled">
+                                <li><a href="archive.html">Text 306</a></li>
+                                <li><a href="archive.html">Text 307</a></li>
+                                <li><a href="archive.html">Text 308</a></li>
+                                <li><a href="archive.html">Text 309</a></li>
+                                <li><a href="archive.html">Text 310</a></li>
+                            </ul>
+                            <ul class="list-unstyled">
+                                <li><a href="archive.html">Text 311</a></li>
+                                <li><a href="archive.html">Text 312</a></li>
+                                <li><a href="archive.html#">Text 313</a></li>
+                                <li><a href="archive.html#">Text 314</a></li>
+                                <li><a href="archive.html">Text 315</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </li>
+                <li><a href="archive.html">Blog</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
