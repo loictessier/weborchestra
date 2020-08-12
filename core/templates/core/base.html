@@ -66,9 +66,11 @@
             {% endblock content %}
         </section> 
 
-        {% block footer %}
-            {% include "core/footer.html" %}
-        {% endblock footer %}
+        <footer id="footer">
+            <div class="container">
+                {% include "core/footer.html" %} 
+            </div>
+        </footer>
 
         {% block anchor-top %}
             <div id="page-top"><a href="#page-top" class="btn btn-toTop"><i class="fa fa-angle-double-up"></i></a></div>

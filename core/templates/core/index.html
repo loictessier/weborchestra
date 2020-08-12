@@ -402,9 +402,12 @@
             {% endblock content %}
         </section> 
 
-        {% block footer %}
-            {{ block.super }}
-        {% endblock footer %}
+        <footer id="footer">
+            <div class="container">
+                {% include "core/footer-contact-form.html" %}
+                {% include "core/footer.html" %} 
+            </div>
+        </footer>
 
         {% block anchor-top %}
             {{ block.super }}

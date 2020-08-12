@@ -1,5 +1,6 @@
 from selenium import webdriver
 import unittest
+import time
 
 class NewUserTest(unittest.TestCase):
 
@@ -15,11 +16,15 @@ class NewUserTest(unittest.TestCase):
         
         # he notices the page title and header mention web'orchestra
         self.assertIn("Web'Orchestra", self.browser.title)
-        self.fail('Finish the test!')
 
-        # he clicks the sign up button and is redirected to the sign up form
+        # he clicks the signup button and is redirected to the signup form
+        self.browser.find_element_by_link_text("S'INSCRIRE").click()
+        time.sleep(1)
+        title = self.browser.find_element_by_tag_name('h1').text
+        self.assertIn("S'INSCRIRE", title)
 
         # he complete the form with his username, mail and password
+        self.fail('Finish the test!')
 
         # when he hits enter, the account is created and he is redirected to the front page
         # the user reads a confirmation message that confirm his account was created
