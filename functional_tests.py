@@ -1,4 +1,6 @@
 from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+from selenium.common.exceptions import NoSuchElementException
 import unittest
 import time
 
@@ -23,11 +25,31 @@ class NewUserTest(unittest.TestCase):
         title = self.browser.find_element_by_tag_name('h1').text
         self.assertIn("S'INSCRIRE", title)
 
-        # he complete the form with his username, mail and password
-        self.fail('Finish the test!')
+        # he is invited to complete the signup form
+        inputbox_email = self.browser.find_element_by_id('id_signup_email')
+        self.assertEqual(
+            inputbox_email.get_attribute('placeholder'),
+            'exemple@adresse.com'
+        )
+        inputbox_password = self.browser.find_element_by_id('id_signup_password')
+        self.assertEqual(
+            inputbox_password.get_attribute('placeholder'),
+            '********'
+        )
 
-        # when he hits enter, the account is created and he is redirected to the front page
-        # the user reads a confirmation message that confirm his account was created
+        # he types in his email and password
+        inputbox_email.send_keys('abcdef@abcdef.abc')
+        inputbox_password.send_keys('abcde')
+
+
+        # when he hits enter, the page updates and now the page displays
+        # a sign out button on the nav bar
+        inputbox_password.send_keys(Keys.ENTER)
+        time.sleep(1)
+        try:
+            self.browser.find_element_by_link_text('DECONNEXION')
+        except NoSuchElementException:
+            print("No element found")
 
 if __name__ =='__main__':
     unittest.main(warnings='ignore')
