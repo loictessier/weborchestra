@@ -3,5 +3,8 @@
 {% block page-title %}S'inscrire{% endblock %} 
 
 {% block content %}
-    <!-- Content -->
+    <form method="POST" action="">
+        {{ form.email }}
+        {% csrf_token %}
+    </form>
 {% endblock content %}

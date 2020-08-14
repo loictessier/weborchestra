@@ -9,6 +9,7 @@ verify_ssl = true
 django = "==3.0.9"
 selenium = "*"
 psycopg2-binary = "*"
+model-bakery = "*"
 
 [requires]
 python_version = "3.8"
