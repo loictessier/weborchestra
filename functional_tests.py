@@ -3,6 +3,9 @@ from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import NoSuchElementException
 import unittest
 import time
+import logging
+
+logger = logging.getLogger(__name__)
 
 class NewUserTest(unittest.TestCase):
 
@@ -17,7 +20,7 @@ class NewUserTest(unittest.TestCase):
         self.browser.get('http://localhost:8000')
         
         # he notices the page title and header mention web'orchestra
-        self.assertIn("Web'Orchestra", self.browser.title)
+        self.assertIn("Int'Aire'Mezzo | Accueil", self.browser.title)
 
         # he clicks the signup button and is redirected to the signup form
         self.browser.find_element_by_link_text("S'INSCRIRE").click()
@@ -49,7 +52,7 @@ class NewUserTest(unittest.TestCase):
         try:
             self.browser.find_element_by_link_text('DECONNEXION')
         except NoSuchElementException:
-            print("No element found")
+            logger.error("No element found", exc_info=True)
 
 if __name__ =='__main__':
     unittest.main(warnings='ignore')
