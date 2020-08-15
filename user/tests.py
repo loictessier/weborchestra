@@ -17,10 +17,21 @@ class SignupTest(TestCase):
         response = self.client.get('/auth/signup')
         self.assertTemplateUsed(response, 'user/signup.html')
 
+    def test_only_saves_profile_when_necessary(self):
+        self.client.get('/auth/signup')
+        self.assertEqual(Profile.objects.count(), 0)
+
     def test_can_save_a_POST_request(self):
+        self.client.post('/auth/signup', data={'email': 'example@email.test'})
+
+        self.assertEqual(Profile.objects.count(), 1)
+        new_profile = Profile.objects.first()
+        self.assertEqual(new_profile.user.email, 'example@email.test')
+
+    def test_redirects_after_POST(self):
         response = self.client.post('/auth/signup', data={'email': 'example@email.test'})
-        self.assertIn('example@email.test', response.content.decode())
-        self.assertTemplateUsed(response, 'user/signup.html')
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response['location'], '/')
 
     def test_signup_page_uses_item_form(self):
         response = self.client.get('/auth/signup')
