@@ -13,8 +13,13 @@ from user.forms import EMPTY_EMAIL_ERROR, SignupForm
 # Test Views/Templates
 class SignupTest(TestCase):
 
-    def test_signup_returns_correct_html(self):
+    def test_uses_signup_template(self):
         response = self.client.get('/auth/signup')
+        self.assertTemplateUsed(response, 'user/signup.html')
+
+    def test_can_save_a_POST_request(self):
+        response = self.client.post('/auth/signup', data={'email': 'example@email.test'})
+        self.assertIn('example@email.test', response.content.decode())
         self.assertTemplateUsed(response, 'user/signup.html')
 
     def test_signup_page_uses_item_form(self):

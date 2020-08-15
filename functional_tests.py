@@ -15,6 +15,12 @@ class NewUserTest(unittest.TestCase):
     def tearDown(self):
         self.browser.quit()
 
+    def check_for_placeholder_value_of_element(self, element, placeholder_value):
+        self.assertEqual(
+            element.get_attribute('placeholder'),
+            placeholder_value
+        )
+
     def test_can_create_an_account_and_get_confirmation_message(self):
         # user check out home page
         self.browser.get('http://localhost:8000')
@@ -29,26 +35,24 @@ class NewUserTest(unittest.TestCase):
         self.assertIn("S'INSCRIRE", title)
 
         # he is invited to complete the signup form
-        inputbox_email = self.browser.find_element_by_id('id_signup_email')
-        self.assertEqual(
-            inputbox_email.get_attribute('placeholder'),
-            'exemple@adresse.com'
-        )
-        inputbox_password = self.browser.find_element_by_id('id_signup_password')
-        self.assertEqual(
-            inputbox_password.get_attribute('placeholder'),
-            '********'
-        )
+        inputbox_email = self.browser.find_element_by_id('id_email')
+        self.check_for_placeholder_value_of_element(inputbox_email, 'exemple@adresse.com')
+        inputbox_password = self.browser.find_element_by_id('id_password')
+        self.check_for_placeholder_value_of_element(inputbox_password, '********')
+        inputbox_confirm_password = self.browser.find_element_by_id('id_confirm_password')
+        self.check_for_placeholder_value_of_element(inputbox_confirm_password, '********')
 
         # he types in his email and password
         inputbox_email.send_keys('abcdef@abcdef.abc')
         inputbox_password.send_keys('abcde')
-
+        inputbox_confirm_password.send_keys('abcde')
 
         # when he hits enter, the page updates and now the page displays
-        # a sign out button on the nav bar
-        inputbox_password.send_keys(Keys.ENTER)
+        # a sign out button on the nav bar and a confirmation message
+        inputbox_email.send_keys(Keys.ENTER)
         time.sleep(1)
+        confirm_signup = self.browser.find_element_by_id('confirm_signup')
+        self.assertIn('Bienvenue abcdef@abcdef.abc votre compte a bien été créé.', confirm_signup.text)
         try:
             self.browser.find_element_by_link_text('DECONNEXION')
         except NoSuchElementException:
