@@ -3,9 +3,10 @@
 {% block page-title %}S'inscrire{% endblock %} 
 
 {% block content %}
-    <form method="POST" action="">
+    <form method="POST">
         {{ form.as_p }}
         {% csrf_token %}
+        <button type="submit">S'incrire</button>
     </form>
     <p id="confirm_signup">Bienvenue {{ new_email }} votre compte a bien été créé.</p>
 {% endblock content %}

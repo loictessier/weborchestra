@@ -37,15 +37,15 @@ class NewUserTest(unittest.TestCase):
         # he is invited to complete the signup form
         inputbox_email = self.browser.find_element_by_id('id_email')
         self.check_for_placeholder_value_of_element(inputbox_email, 'exemple@adresse.com')
-        inputbox_password = self.browser.find_element_by_id('id_password')
-        self.check_for_placeholder_value_of_element(inputbox_password, '********')
-        inputbox_confirm_password = self.browser.find_element_by_id('id_confirm_password')
-        self.check_for_placeholder_value_of_element(inputbox_confirm_password, '********')
+        inputbox_password1 = self.browser.find_element_by_id('id_password1')
+        self.check_for_placeholder_value_of_element(inputbox_password1, '********')
+        inputbox_password2 = self.browser.find_element_by_id('id_password2')
+        self.check_for_placeholder_value_of_element(inputbox_password2, '********')
 
         # he types in his email and password
-        inputbox_email.send_keys('abcdef@abcdef.abc')
-        inputbox_password.send_keys('abcde')
-        inputbox_confirm_password.send_keys('abcde')
+        inputbox_email.send_keys('django@func.test')
+        inputbox_password1.send_keys('Django4521')
+        inputbox_password2.send_keys('Django4521')
 
         # when he hits enter, the page updates and now the page displays
         # a sign out button on the nav bar and a confirmation message
