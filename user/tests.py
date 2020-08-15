@@ -29,11 +29,18 @@ class SignupTest(TestCase):
 # Test Models
 class ProfileTest(TestCase):
     
-    def test_profile_creation(self):
-        new_user = baker.make(User)
-        new_profile = baker.make(Profile, user=new_user)
-        self.assertTrue(isinstance(new_profile, Profile))
-        self.assertEqual(new_user.username, new_profile.__str__())
+    def test_saving_and_retrieving_profiles(self):
+        first_user = baker.make(User)
+        first_profile = baker.make(Profile, user=first_user)
+        second_user = baker.make(User)
+        second_profile = baker.make(Profile, user= second_user)
+
+        saved_profiles = Profile.objects.all()
+        self.assertEqual(saved_profiles.count(), 2)
+
+        first_saved_profile = saved_profiles[0]
+        self.assertTrue(isinstance(first_saved_profile, Profile))
+        self.assertEqual(first_user.username, first_saved_profile.__str__())
 
 # Test Forms
 class SignupFormTest(TestCase):
