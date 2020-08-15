@@ -33,7 +33,7 @@ class SignupTest(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response['location'], '/')
 
-    def test_signup_page_uses_item_form(self):
+    def test_signup_page_uses_signup_form(self):
         response = self.client.get('/auth/signup')
         self.assertIsInstance(response.context['form'], SignupForm)
 
@@ -56,10 +56,16 @@ class ProfileTest(TestCase):
 # Test Forms
 class SignupFormTest(TestCase):
 
-    def test_form_renders_signup_email_input(self):
+    def test_form_renders_email_input(self):
         form = SignupForm()
         self.assertIn('placeholder="exemple@adresse.com"', form.as_p())
         self.assertIn('class="form-control input-lg"', form.as_p())
+
+    def test_form_renders_password_and_confirm_inputs(self):
+        form = SignupForm()
+        self.assertIn('placeholder="********"', form.as_p())
+        self.assertIn('id="id_password1', form.as_p())
+        self.assertIn('id="id_password2"', form.as_p())
 
     def test_form_validation_for_blank_items(self):
         form = SignupForm(data={'email': ''})
@@ -67,4 +73,16 @@ class SignupFormTest(TestCase):
         self.assertEqual(
             form.errors['email'],
             [EMPTY_EMAIL_ERROR]
+        )
+
+    def test_form_validation_for_password_mismatch(self):
+        form = SignupForm(data={
+            'email': 'test@test.test',
+            'password1': 'abcdef123',
+            'password2': 'badcfe321'
+        })
+        self.assertFalse(form.is_valid())
+        self.assertEqual(
+            form.errors['password2'],
+            ['Les deux mots de passe ne correspondent pas.']
         )
