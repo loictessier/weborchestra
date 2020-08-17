@@ -52,7 +52,7 @@ class NewUserTest(unittest.TestCase):
         inputbox_email.send_keys(Keys.ENTER)
         time.sleep(1)
         confirm_signup = self.browser.find_element_by_id('confirm_signup')
-        self.assertIn('Bienvenue abcdef@abcdef.abc votre compte a bien été créé.', confirm_signup.text)
+        self.assertIn('Bienvenue django@func.test votre compte a bien été créé.', confirm_signup.text)
         try:
             self.browser.find_element_by_link_text('DECONNEXION')
         except NoSuchElementException:
