@@ -12,9 +12,7 @@ def signup(request):
     if form.is_valid():
         email = form.cleaned_data.get('email')
         password = form.cleaned_data.get('password1')
-        user = User.objects.create_user(email, email, password)
-        profile = Profile(user=user)
-        profile.save()
+        User.objects.create_user(email, email, password)
         user = authenticate(username=email, password=password)
         login(request, user)
         return redirect('/')

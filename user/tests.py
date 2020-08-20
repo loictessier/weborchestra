@@ -9,7 +9,7 @@ from user.views import signup
 from django.contrib.auth.models import User
 from user.models import Profile
 
-from user.forms import EMPTY_EMAIL_ERROR, SignupForm
+from user.forms import EMPTY_EMAIL_ERROR, DUPLICATE_USER_ERROR, SignupForm
 
 # Test Views/Templates
 class SignupTest(TestCase):
@@ -45,7 +45,7 @@ class SignupTest(TestCase):
             'password1': 'Django4521',
             'password2': 'Django4521'
         })
-
+        self.assertEqual(User.objects.count(), 1)
         self.assertEqual(Profile.objects.count(), 1)
         new_profile = Profile.objects.first()
         self.assertEqual(new_profile.user.email, 'example@email.test')
@@ -65,9 +65,7 @@ class ProfileTest(TestCase):
     
     def test_saving_and_retrieving_profiles(self):
         first_user = baker.make(User)
-        first_profile = baker.make(Profile, user=first_user)
         second_user = baker.make(User)
-        second_profile = baker.make(Profile, user= second_user)
 
         saved_profiles = Profile.objects.all()
         self.assertEqual(saved_profiles.count(), 2)
@@ -109,3 +107,13 @@ class SignupFormTest(TestCase):
             form.errors['password2'],
             ['Les deux mots de passe ne correspondent pas.']
         )
+
+    def test_form_validation_for_duplicate_user(self):
+        self.user1 = baker.make(User, username='test@test.test', email='test@test.test')
+        form = SignupForm(data={
+            'email': self.user1.email,
+            'password1': 'abcdef123',
+            'password2': 'abcdef123'
+        })
+        self.assertFalse(form.is_valid())
+        self.assertEqual(form.errors['email'], [DUPLICATE_USER_ERROR])
