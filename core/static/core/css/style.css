@@ -77,7 +77,8 @@ hr.line { margin: 15px auto; padding: 0; max-width: 70px;border: 0; border-top: 
 /* --Page-- */
 body.index-page {}
 body.sub-page{}
-body.sub-page header .main-header{height: 47vh;background: url(../images/sup_showcase_bg.jpg) center center;}
+body.sub-page header .main-header{height: 35vh;background: url(../images/sup_showcase_bg.jpg) center center;}
+
 
 body .wrap-body{position: relative;}
 body .wrap-body #page-top{position: fixed;right: 40px;bottom: 40px;z-index: 999;}
@@ -85,19 +86,19 @@ body .wrap-body #page-top{position: fixed;right: 40px;bottom: 40px;z-index: 999;
 /* -------------------------------Header-Styles-------------------------------- */
 /* ---------------------------------------------------------------------------- */
 
-header .main-header{position: relative;height: 100vh;width: 100%;background: url(../images/showcase_bg.jpg) center center;background-size: cover;z-index: 2;}
+header .main-header{position: relative;height: 100vh;width: 100%;background: linear-gradient(to bottom,rgba(92,77,66,.8) 0,rgba(92,77,66,.8) 100%), url(../images/showcase_bg.jpg) center center;background-size: cover;z-index: 2;}
 body.index-page header{height:100vh;}
 header.sub-header{background:#1D2027;min-height: 120px;}
 
 /* Header Styles */
 .header-text {margin-top: 7vh;transition: opacity 1s ease 0s, transform 1s ease 0s;z-index: 1;opacity: 1;}
 body.index-page .header-text{text-align: center;margin: 35vh auto 0;}
-body.index-page .header-text .header-text-inner{border: 4px solid #000;display: inline-block;padding: 20px 40px;}
+body.index-page .header-text .header-text-inner{border: 4px solid #FFF;display: inline-block;padding: 20px 40px;}
 body.sub-page .header-text{padding-left: 10%;margin-top: 12vh;}
 .header-text.remove {-moz-transform: translateY(3rem);-webkit-transform: translateY(3rem);-ms-transform: translateY(3rem);transform: translateY(3rem);-moz-transition: all 0.5s ease-in-out;-webkit-transition: all 0.5s ease-in-out;-ms-transition: all 0.5s ease-in-out;transition: all 0.5s ease-in-out;opacity: 0;visibility: hidden;}
 
-.header-text h1{margin: 0 auto;text-transform: uppercase;color: #000;font-size: 49px;letter-spacing: 13px;font-family: 'Roboto', sans-serif;}
-.header-text p{ margin: 10px;margin-bottom: 0;font-size: 18px;color: #000;letter-spacing: 6.5px;}
+.header-text h1{margin: 0 auto;text-transform: uppercase;color: #FFF;font-size: 49px;letter-spacing: 13px;font-family: 'Roboto', sans-serif;}
+.header-text p{ margin: 10px;margin-bottom: 0;font-size: 18px;color: #FFF;letter-spacing: 6.5px;}
 
 @media(max-width:978px) {
     body.index-page .header-text h1{font-size: 39px;letter-spacing: 10px;}
