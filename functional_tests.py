@@ -44,19 +44,17 @@ class NewUserTest(unittest.TestCase):
 
         # he types in his email and password
         inputbox_email.send_keys('django@func.test')
-        inputbox_password1.send_keys('Django4521')
-        inputbox_password2.send_keys('Django4521')
+        inputbox_password1.send_keys('Python4521')
+        inputbox_password2.send_keys('Python4521')
 
         # when he hits enter, the page updates and now the page displays
-        # a sign out button on the nav bar and a confirmation message
+        # a message stating that the confirmation email has been sent
         inputbox_email.send_keys(Keys.ENTER)
         time.sleep(1)
-        confirm_signup = self.browser.find_element_by_id('confirm_signup')
-        self.assertIn('Bienvenue django@func.test votre compte a bien été créé.', confirm_signup.text)
-        try:
-            self.browser.find_element_by_link_text('DECONNEXION')
-        except NoSuchElementException:
-            logger.error("No element found", exc_info=True)
+        title = self.browser.find_element_by_tag_name('h1').text
+        self.assertIn('ACTIVATION DU COMPTE', title)
+        message = self.browser.find_element_by_id('activation_sent_message').text
+        self.assertIn("Votre lien d'activation a été envoyé !", message)
 
 if __name__ =='__main__':
     unittest.main(warnings='ignore')

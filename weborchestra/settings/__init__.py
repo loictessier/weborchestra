@@ -126,7 +126,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 # Logging configuration
-# https://docs.djangoproject.com/en/3.1/topics/logging/
+# https://docs.djangoproject.com/en/3.0/topics/logging/
 
 LOGGING = {
     'version': 1,
@@ -141,3 +141,9 @@ LOGGING = {
         'level': 'WARNING',
     },
 }
+
+# Email backend
+# https://docs.djangoproject.com/fr/3.0/topics/email/
+
+EMAIL_BACKEND = 'django.core.mail.backends.locmem.EmailBackend'
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

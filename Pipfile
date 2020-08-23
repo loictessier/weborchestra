@@ -10,6 +10,7 @@ django = "==3.0.9"
 selenium = "*"
 psycopg2-binary = "*"
 model-bakery = "*"
+six = "*"
 
 [requires]
 python_version = "3.8"

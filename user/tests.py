@@ -1,10 +1,15 @@
-from django.urls import resolve
+from django.urls import resolve, reverse
 from django.test import TestCase
 from django.http import HttpRequest
 from django.utils.html import escape
 from model_bakery import baker
+from django.core import mail
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
 
-from user.views import signup
+from user.tokens import account_activation_token
+
+from user.views import ACCOUNT_ACTIVATION_EMAIL_SUBJECT, signup
 
 from django.contrib.auth.models import User
 from user.models import Profile
@@ -49,6 +54,19 @@ class SignupTest(TestCase):
         self.assertEqual(Profile.objects.count(), 1)
         new_profile = Profile.objects.first()
         self.assertEqual(new_profile.user.email, 'example@email.test')
+        self.assertFalse(new_profile.user.is_active)
+
+    def test_send_mail_after_POST(self):
+        response = self.client.post('/auth/signup', data={
+            'email': 'example@email.test',
+            'password1': 'Django4521',
+            'password2': 'Django4521'
+        })
+        self.assertEqual(len(mail.outbox), 1)
+        sent_mail = mail.outbox[0]
+        self.assertEqual(sent_mail.subject, ACCOUNT_ACTIVATION_EMAIL_SUBJECT)
+        self.assertIn('example@email.test', sent_mail.body)
+
 
     def test_redirects_after_POST(self):
         response = self.client.post('/auth/signup', data={
@@ -57,8 +75,50 @@ class SignupTest(TestCase):
             'password2': 'Django4521'
         })
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response['location'], '/')
+        self.assertEqual(response['location'], '/auth/sent')
 
+
+class ActivationSentTest(TestCase):
+
+    def test_uses_activation_sent_template(self):
+        response = self.client.get('/auth/sent')
+        self.assertTemplateUsed(response, 'user/activation_sent.html')
+
+
+class ActivateTest(TestCase):
+    
+    def setUp(self):
+        self.new_user_data = {
+            'email': 'example@email.test',
+            'password': 'Django4521'
+        }
+        self.new_user = User.objects.create_user(
+            self.new_user_data['email'],
+            self.new_user_data['email'],
+            self.new_user_data['password']
+        )
+        self.new_user.is_active = False
+        self.new_user.save()
+        self.new_user_data['uid'] = urlsafe_base64_encode(force_bytes(self.new_user.pk))
+        self.new_user_data['token'] = account_activation_token.make_token(self.new_user)
+
+    def test_uses_activation_invalid_template_fake_data(self):
+        response = self.client.get(reverse('user:activate', kwargs={
+            'uidb64': 'FAke-uid_48F23E24022E',
+            'token': 'TEST_1337_Fake'
+        }))
+        self.assertTemplateUsed(response, 'user/activation_invalid.html')
+
+    def test_redirect_index_and_user_active_valid_data(self):
+        response = self.client.get(reverse('user:activate', kwargs={
+            'uidb64': self.new_user_data['uid'],
+            'token': self.new_user_data['token']
+        }))
+        my_user = User.objects.get(pk=self.new_user.pk)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response['location'], '/')
+        self.assertTrue(my_user.is_active)
+        self.assertTrue(my_user.profile.signup_confirmation)
 
 # Test Models
 class ProfileTest(TestCase):
@@ -73,6 +133,13 @@ class ProfileTest(TestCase):
         first_saved_profile = saved_profiles[0]
         self.assertTrue(isinstance(first_saved_profile, Profile))
         self.assertEqual(first_user.username, first_saved_profile.__str__())
+
+    def test_new_profile_set_signup_confirmation_to_false(self):
+        new_user = baker.make(User)
+        new_profile = new_user.profile
+
+        self.assertFalse(new_profile.signup_confirmation, False)
+
 
 # Test Forms
 class SignupFormTest(TestCase):
