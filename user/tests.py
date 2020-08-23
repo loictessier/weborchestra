@@ -67,7 +67,6 @@ class SignupTest(TestCase):
         self.assertEqual(sent_mail.subject, ACCOUNT_ACTIVATION_EMAIL_SUBJECT)
         self.assertIn('example@email.test', sent_mail.body)
 
-
     def test_redirects_after_POST(self):
         response = self.client.post('/auth/signup', data={
             'email': 'example@email.test',
@@ -119,6 +118,13 @@ class ActivateTest(TestCase):
         self.assertEqual(response['location'], '/')
         self.assertTrue(my_user.is_active)
         self.assertTrue(my_user.profile.signup_confirmation)
+
+class SigninTest(TestCase):
+
+    def test_uses_signin_template(self):
+        response = self.client.get('/auth/signin')
+        self.assertTemplateUsed(response, 'user/signin.html')
+
 
 # Test Models
 class ProfileTest(TestCase):
