@@ -10,7 +10,12 @@
         <div class="collapse navbar-collapse navbar-ex1-collapse">
             <ul class="nav navbar-nav">
                 <li class="{% if request.resolver_match.url_name == 'index' %}active{% endif %}"><a href="{% url 'core:index' %}">Accueil</a></li>
-                <li class="{% if request.resolver_match.url_name == 'signup' %}active{% endif %}"><a href="{% url 'user:signup' %}">S'inscrire</a></li>
+                {% if request.user.is_authenticated %}
+                    <li class="{% if request.resolver_match.url_name == 'signout' %}active{% endif %}"><a href="{% url 'user:signout' %}">Se déconnecter</a></li>
+                {% else %}
+                    <li class="{% if request.resolver_match.url_name == 'signin' %}active{% endif %}"><a href="{% url 'user:signin' %}">Se connecter</a></li>
+                    <li class="{% if request.resolver_match.url_name == 'signup' %}active{% endif %}"><a href="{% url 'user:signup' %}">S'inscrire</a></li>
+                {% endif %}
             </ul>
         </div>
     </div>

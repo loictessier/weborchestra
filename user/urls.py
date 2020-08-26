@@ -9,5 +9,5 @@ urlpatterns = [
     path('sent', views.activation_sent, name='activation_sent'),
     path('activate/<slug:uidb64>/<slug:token>/', views.activate, name='activate'),
     path('signin', views.signin, name='signin'),
-    path('logout', views.logout, name='logout'),
+    path('signout', views.signout, name='signout'),
 ]

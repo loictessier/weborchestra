@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 
 EMPTY_EMAIL_ERROR = "Vous ne pouvez pas avoir un champ email vide."
 DUPLICATE_USER_ERROR = "Un utilisateur correspondant à cette adresse email existe déjà."
@@ -37,3 +37,30 @@ class SignupForm(UserCreationForm):
     class Meta:
         model = User
         fields = ('email', 'password1', 'password2')
+
+
+class SigninForm(AuthenticationForm):
+    email = forms.EmailField(
+        max_length=200,
+        widget=forms.TextInput(
+            attrs={
+                'type': 'email',
+                'placeholder': 'exemple@adresse.com',
+                'class': 'form-control input-lg'
+            }
+        ),
+        error_messages = {
+            'required': EMPTY_EMAIL_ERROR
+        }
+    )
+    
+    field_order = ['email', 'password']
+    
+    def __init__(self, *args, **kwargs):
+        super(SigninForm, self).__init__(*args, **kwargs)
+        self.fields.pop('username')
+        self.fields['password'].widget.attrs['placeholder'] = '********'
+
+    class Meta:
+        model = User
+        fields = ('email', 'password')

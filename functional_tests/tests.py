@@ -6,6 +6,8 @@ import unittest
 import time
 import logging
 
+from django.contrib.auth.models import User
+
 logger = logging.getLogger(__name__)
 
 class NewUserTest(StaticLiveServerTestCase):
@@ -57,10 +59,15 @@ class NewUserTest(StaticLiveServerTestCase):
         message = self.browser.find_element_by_id('activation_sent_message').text
         self.assertIn("Votre lien d'activation a été envoyé !", message)
 
+
 class SigninTest(StaticLiveServerTestCase):
     
     def setUp(self):
         self.browser = webdriver.Firefox()
+        self.user = User.objects.create_user('weborchestra@signin.test', 'weborchestra@signin.test', 'Python4521')
+        self.user.is_active = True
+        self.user.profile.signup_confirmation = True
+        self.user.save()
 
     def tearDown(self):
         self.browser.quit()
@@ -92,36 +99,45 @@ class SigninTest(StaticLiveServerTestCase):
         inputbox_password.send_keys('Python4521')
 
         # when he hits enter, the page updates and he is redirected to 
-        # the index page and the navbar displays a logout link 
+        # the index page and the navbar displays a signout link 
         inputbox_email.send_keys(Keys.ENTER)
         time.sleep(1)
         self.assertIn("Int'Aire'Mezzo | Accueil", self.browser.title)
         try:
-            self.browser.find_element_by_link_text('DECONNEXION')
+            self.browser.find_element_by_link_text('Se déconnecter'.upper())
         except NoSuchElementException:
             logger.error("No element found", exc_info=True)
 
-class Logouttest(StaticLiveServerTestCase):
+
+class SignoutTest(StaticLiveServerTestCase):
     
     def setUp(self):
+        self.user = User.objects.create_user('weborchestra@signin.test', 'weborchestra@signin.test', 'Python4521')
+        self.user.is_active = True
+        self.user.profile.signup_confirmation = True
+        self.user.save()
         self.browser = webdriver.Firefox()
         self.browser.get(self.live_server_url)
         self.browser.find_element_by_link_text("SE CONNECTER").click()
+        time.sleep(1)
         inputbox_email = self.browser.find_element_by_id('id_email')
         inputbox_password = self.browser.find_element_by_id('id_password')
         inputbox_email.send_keys('weborchestra@signin.test')
         inputbox_password.send_keys('Python4521')
         inputbox_email.send_keys(Keys.ENTER)
+        time.sleep(1)
+        self.browser.find_element_by_link_text("ACCUEIL").click()
+        time.sleep(1)
 
     def tearDown(self):
         self.browser.quit()
 
-    def test_can_logout(self):
+    def test_can_signout(self):
         # user is on home page
         self.assertIn("Int'Aire'Mezzo | Accueil", self.browser.title)
 
-        # he clicks on logout link and the page reload
-        self.browser.find_element_by_link_text("DECONNEXION").click()
+        # he clicks on signout link and the page reload
+        self.browser.find_element_by_link_text('Se déconnecter'.upper()).click()
         time.sleep(1)
 
         # the page now displays signin and signup links

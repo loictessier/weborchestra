@@ -6,6 +6,7 @@ from model_bakery import baker
 from django.core import mail
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
+from unittest.mock import patch
 
 from user.tokens import account_activation_token
 
@@ -14,7 +15,7 @@ from user.views import ACCOUNT_ACTIVATION_EMAIL_SUBJECT, signup
 from django.contrib.auth.models import User
 from user.models import Profile
 
-from user.forms import EMPTY_EMAIL_ERROR, DUPLICATE_USER_ERROR, SignupForm
+from user.forms import EMPTY_EMAIL_ERROR, DUPLICATE_USER_ERROR, SignupForm, SigninForm
 
 # Test Views/Templates
 class SignupTest(TestCase):
@@ -119,11 +120,51 @@ class ActivateTest(TestCase):
         self.assertTrue(my_user.is_active)
         self.assertTrue(my_user.profile.signup_confirmation)
 
+
 class SigninTest(TestCase):
+
+    def setUp(self):
+        self.new_user = User.objects.create_user('django@test.test', 'django@test.test', 'Django4321')
+        self.new_user.is_active = True
+        self.new_user.profile.signup_confirmation = True
+        self.new_user.save()
 
     def test_uses_signin_template(self):
         response = self.client.get('/auth/signin')
         self.assertTemplateUsed(response, 'user/signin.html')
+
+    def test_uses_signin_form(self):
+        response = self.client.get('/auth/signin')
+        self.assertIsInstance(response.context['form'], SigninForm)
+
+    def test_POST_invalid_credentials(self):
+        response = self.client.post('/auth/signin', data={
+            'email': 'inexistant@email.com',
+            'password': 'P4ssw0rd1234'
+        })
+        self.assertTrue(response.context['authentication_error'])
+
+    def test_POST_valid_credentials_redirect_index(self):
+        response = self.client.post('/auth/signin', data={
+            'email': 'django@test.test',
+            'password': 'Django4321'
+        })
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response['location'], '/')
+
+
+class SignoutTest(TestCase):
+
+    def test_redirect_to_index(self):
+        response = self.client.get('/auth/signout')
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response['location'], '/')
+
+    @patch('user.views.logout')
+    def test_user_logged_out(self, mock_logout):
+        mock_logout.return_value = None
+        response = self.client.get('/auth/signout')
+        mock_logout.assert_called_once()
 
 
 # Test Models
@@ -190,3 +231,15 @@ class SignupFormTest(TestCase):
         })
         self.assertFalse(form.is_valid())
         self.assertEqual(form.errors['email'], [DUPLICATE_USER_ERROR])
+
+
+class SigninFormTest(TestCase):
+
+    def test_form_renders_email_input(self):
+        form = SigninForm()
+        self.assertIn('placeholder="exemple@adresse.com"', form.as_p())
+        self.assertIn('class="form-control input-lg"', form.as_p())
+
+    def test_form_renders_password_input(self):
+        form = SigninForm()
+        self.assertIn('placeholder="********', form.as_p())
