@@ -124,6 +124,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_ROOT, 'staticfiles')
 
 # Logging configuration
 # https://docs.djangoproject.com/en/3.0/topics/logging/
@@ -147,3 +148,4 @@ LOGGING = {
 
 EMAIL_BACKEND = 'django.core.mail.backends.locmem.EmailBackend'
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
