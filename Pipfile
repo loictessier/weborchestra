@@ -11,6 +11,7 @@ selenium = "*"
 psycopg2-binary = "*"
 model-bakery = "*"
 six = "*"
+gunicorn = "*"
 
 [requires]
 python_version = "3.8"
