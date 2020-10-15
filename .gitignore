@@ -130,3 +130,5 @@ dmypy.json
 
 weborchestra/settings/production.py
 weborchestra/staticfiles/
+
+.vscode
