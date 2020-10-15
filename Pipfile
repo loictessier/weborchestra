@@ -4,10 +4,11 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
+flake8 = "*"
+selenium = "*"
 
 [packages]
 django = "==3.0.9"
-selenium = "*"
 psycopg2-binary = "*"
 model-bakery = "*"
 six = "*"
