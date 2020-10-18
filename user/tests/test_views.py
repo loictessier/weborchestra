@@ -1,23 +1,21 @@
-from django.urls import resolve, reverse
 from django.test import TestCase
-from django.http import HttpRequest
 from django.utils.html import escape
-from model_bakery import baker
-from django.core import mail
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
+from django.contrib.auth.models import User
+from django.core import mail
+from django.urls import reverse
 from unittest.mock import patch
 
+from user.models import Profile
+from user.views import ACCOUNT_ACTIVATION_EMAIL_SUBJECT
+from user.forms import (
+    SignupForm, SigninForm,
+    EMPTY_EMAIL_ERROR
+)
 from user.tokens import account_activation_token
 
-from user.views import ACCOUNT_ACTIVATION_EMAIL_SUBJECT, signup
 
-from django.contrib.auth.models import User
-from user.models import Profile
-
-from user.forms import EMPTY_EMAIL_ERROR, DUPLICATE_USER_ERROR, SignupForm, SigninForm
-
-# Test Views/Templates
 class SignupTest(TestCase):
 
     def test_uses_signup_template(self):
@@ -58,7 +56,7 @@ class SignupTest(TestCase):
         self.assertFalse(new_profile.user.is_active)
 
     def test_send_mail_after_POST(self):
-        response = self.client.post('/auth/signup', data={
+        self.client.post('/auth/signup', data={
             'email': 'example@email.test',
             'password1': 'Django4521',
             'password2': 'Django4521'
@@ -86,7 +84,7 @@ class ActivationSentTest(TestCase):
 
 
 class ActivateTest(TestCase):
-    
+
     def setUp(self):
         self.new_user_data = {
             'email': 'example@email.test',
@@ -163,83 +161,5 @@ class SignoutTest(TestCase):
     @patch('user.views.logout')
     def test_user_logged_out(self, mock_logout):
         mock_logout.return_value = None
-        response = self.client.get('/auth/signout')
+        self.client.get('/auth/signout')
         mock_logout.assert_called_once()
-
-
-# Test Models
-class ProfileTest(TestCase):
-    
-    def test_saving_and_retrieving_profiles(self):
-        first_user = baker.make(User)
-        second_user = baker.make(User)
-
-        saved_profiles = Profile.objects.all()
-        self.assertEqual(saved_profiles.count(), 2)
-
-        first_saved_profile = saved_profiles[0]
-        self.assertTrue(isinstance(first_saved_profile, Profile))
-        self.assertEqual(first_user.username, first_saved_profile.__str__())
-
-    def test_new_profile_set_signup_confirmation_to_false(self):
-        new_user = baker.make(User)
-        new_profile = new_user.profile
-
-        self.assertFalse(new_profile.signup_confirmation, False)
-
-
-# Test Forms
-class SignupFormTest(TestCase):
-
-    def test_form_renders_email_input(self):
-        form = SignupForm()
-        self.assertIn('placeholder="exemple@adresse.com"', form.as_p())
-        self.assertIn('class="form-control input-lg"', form.as_p())
-
-    def test_form_renders_password1_and_password2_inputs(self):
-        form = SignupForm()
-        self.assertIn('placeholder="********"', form.as_p())
-        self.assertIn('id="id_password1', form.as_p())
-        self.assertIn('id="id_password2"', form.as_p())
-
-    def test_form_validation_for_blank_email(self):
-        form = SignupForm(data={'email': ''})
-        self.assertFalse(form.is_valid())
-        self.assertEqual(
-            form.errors['email'],
-            [EMPTY_EMAIL_ERROR]
-        )
-
-    def test_form_validation_for_password_mismatch(self):
-        form = SignupForm(data={
-            'email': 'test@test.test',
-            'password1': 'abcdef123',
-            'password2': 'badcfe321'
-        })
-        self.assertFalse(form.is_valid())
-        self.assertEqual(
-            form.errors['password2'],
-            ['Les deux mots de passe ne correspondent pas.']
-        )
-
-    def test_form_validation_for_duplicate_user(self):
-        self.user1 = baker.make(User, username='test@test.test', email='test@test.test')
-        form = SignupForm(data={
-            'email': self.user1.email,
-            'password1': 'abcdef123',
-            'password2': 'abcdef123'
-        })
-        self.assertFalse(form.is_valid())
-        self.assertEqual(form.errors['email'], [DUPLICATE_USER_ERROR])
-
-
-class SigninFormTest(TestCase):
-
-    def test_form_renders_email_input(self):
-        form = SigninForm()
-        self.assertIn('placeholder="exemple@adresse.com"', form.as_p())
-        self.assertIn('class="form-control input-lg"', form.as_p())
-
-    def test_form_renders_password_input(self):
-        form = SigninForm()
-        self.assertIn('placeholder="********', form.as_p())
