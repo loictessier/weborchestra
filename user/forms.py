@@ -5,6 +5,7 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 EMPTY_EMAIL_ERROR = "Vous ne pouvez pas avoir un champ email vide."
 DUPLICATE_USER_ERROR = "Un utilisateur correspondant à cette adresse email existe déjà."
 
+
 class SignupForm(UserCreationForm):
     email = forms.EmailField(
         max_length=200,
@@ -15,11 +16,11 @@ class SignupForm(UserCreationForm):
                 'class': 'form-control input-lg'
             }
         ),
-        error_messages = {
+        error_messages={
             'required': EMPTY_EMAIL_ERROR
         }
     )
-    
+
     def clean_email(self):
         email = self.cleaned_data['email']
         if User.objects.exclude(pk=self.instance.pk).filter(username=email).exists():
@@ -49,13 +50,12 @@ class SigninForm(AuthenticationForm):
                 'class': 'form-control input-lg'
             }
         ),
-        error_messages = {
+        error_messages={
             'required': EMPTY_EMAIL_ERROR
         }
     )
-    
     field_order = ['email', 'password']
-    
+
     def __init__(self, *args, **kwargs):
         super(SigninForm, self).__init__(*args, **kwargs)
         self.fields.pop('username')
