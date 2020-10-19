@@ -6,11 +6,11 @@ verify_ssl = true
 [dev-packages]
 flake8 = "*"
 selenium = "*"
+model-bakery = "*"
 
 [packages]
 django = "==3.0.9"
 psycopg2-binary = "*"
-model-bakery = "*"
 six = "*"
 gunicorn = "*"
 
