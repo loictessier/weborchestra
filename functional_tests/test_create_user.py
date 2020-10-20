@@ -28,7 +28,7 @@ class NewUserTest(FunctionalTest):
         self.check_for_placeholder_value_of_element(inputbox_password2, '********')
 
         # he types in his email and password
-        inputbox_email.send_keys('django@func.test')
+        inputbox_email.send_keys('edith@example.com')
         inputbox_password1.send_keys('Python4521')
         inputbox_password2.send_keys('Python4521')
 
