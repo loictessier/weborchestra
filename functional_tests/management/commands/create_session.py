@@ -16,7 +16,7 @@ class Command(BaseCommand):
         parser.add_argument('password')
 
     def handle(self, *args, **options):
-        session_key = create_pre_authenticated_session(options['email', 'password'])
+        session_key = create_pre_authenticated_session(options['email'], options['password'])
         self.stdout.write(session_key)
 
 

@@ -11,8 +11,7 @@ class Command(BaseCommand):
         parser.add_argument('password')
 
     def handle(self, *args, **options):
-        user = create_activated_account(options['email', 'password'])
-        self.stdout.write(user)
+        create_activated_account(options['email'], options['password'])
 
 
 def create_activated_account(email, password):
@@ -20,4 +19,3 @@ def create_activated_account(email, password):
     user.is_active = True
     user.profile.signup_confirmation = True
     user.save()
-    return user
