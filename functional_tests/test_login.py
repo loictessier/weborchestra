@@ -1,4 +1,3 @@
-from django.contrib.auth.models import User
 from selenium.webdriver.common.keys import Keys
 
 from .base import FunctionalTest
@@ -6,16 +5,11 @@ from .base import FunctionalTest
 
 class SigninTest(FunctionalTest):
 
-    def setUp(self):
-        super().setUp()
-        self.user = User.objects.create_user('weborchestra@signin.test', 'weborchestra@signin.test', 'Python4521')
-        self.user.is_active = True
-        self.user.profile.signup_confirmation = True
-        self.user.save()
-
     def test_can_login_to_existing_account(self):
         # user checks out home page
-        test_email = 'weborchestra@signin.test'
+        test_email = 'edith@example.com'
+        test_password = 'Python4521'
+        self.create_activated_account(test_email, test_password)
         self.browser.get(self.live_server_url)
 
         # he clicks on signin link and is redirected to signin form
@@ -33,7 +27,7 @@ class SigninTest(FunctionalTest):
 
         # he types in his email and password
         inputbox_email.send_keys(test_email)
-        inputbox_password.send_keys('Python4521')
+        inputbox_password.send_keys(test_password)
 
         # when he hits enter, the page updates and he is redirected to
         # the index page and the navbar displays a signout link

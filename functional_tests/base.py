@@ -5,8 +5,9 @@ from selenium.common.exceptions import WebDriverException
 import time
 import os
 
-from .server_tools import reset_database, create_session_on_server
+from .server_tools import reset_database, create_session_on_server, create_activated_account_on_server
 from .management.commands.create_session import create_pre_authenticated_session
+from .management.commands.create_account import create_activated_account
 
 MAX_WAIT = 10
 
@@ -57,11 +58,11 @@ class FunctionalTest(StaticLiveServerTestCase):
             placeholder_value
         )
 
-    def create_pre_authenticated_session(self, email):
+    def create_pre_authenticated_session(self, email, password):
         if self.staging_server:
-            session_key = create_session_on_server(self.staging_server, email)
+            session_key = create_session_on_server(self.staging_server, email, password)
         else:
-            session_key = create_pre_authenticated_session(email)
+            session_key = create_pre_authenticated_session(email, password)
         ## to set a cookie we need to first visit the domain.
         ## 404 pages load the quickest
         self.browser.get(self.live_server_url + "/404_no_such_url/")
@@ -70,3 +71,9 @@ class FunctionalTest(StaticLiveServerTestCase):
             value=session_key,
             path='/',
         ))
+
+    def create_activated_account(self, email, password):
+        if self.staging_server:
+            create_activated_account_on_server(self.staging_server, email, password)
+        else:
+            create_activated_account(email, password)
