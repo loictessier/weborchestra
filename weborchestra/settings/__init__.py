@@ -144,5 +144,3 @@ LOGGING = {
 # https://docs.djangoproject.com/fr/3.0/topics/email/
 
 EMAIL_BACKEND = 'django.core.mail.backends.locmem.EmailBackend'
-# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-

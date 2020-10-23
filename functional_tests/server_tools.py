@@ -3,10 +3,12 @@ from fabric.context_managers import settings
 import os
 
 super_user = os.environ.get('SERVER_SUPER_USER')
+django_settings = os.environ.get('SERVER_DJANGO_SETTINGS_MODULE')
 
 
 def _get_manage_dot_py(host):
-    return f'~/sites/{host}/virtualenv/bin/python ~/sites/{host}/source/manage.py'
+    return f"DJANGO_SETTINGS_MODULE='{django_settings}' ~/sites/{host}/virtualenv/bin/python \
+        ~/sites/{host}/source/manage.py"
 
 
 def reset_database(host):
