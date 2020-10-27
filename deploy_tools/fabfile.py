@@ -37,8 +37,7 @@ def _get_latest_source(source_folder):
 def _update_settings(source_folder, site_name, settings_name):
     settings_path = source_folder + f'/weborchestra/settings/{settings_name}.py'
     if not exists(settings_path):
-        run(f'cd {source_folder}'
-            ' && cp /deploy_tools/django-settings.template.py {settings_path}')
+        run(f'cp {source_folder}/deploy_tools/django-settings.template.py {settings_path}')
         sed(settings_path,
             'SITENAME',
             site_name)
