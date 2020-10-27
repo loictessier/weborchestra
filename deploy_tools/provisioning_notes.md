@@ -18,12 +18,8 @@ eg, on Ubuntu
 
 ## Django server settings module 
 
-* see django-settings.template.py
-* copy template under, e.g., home/username/sites/SITENAME/source/weborchestra/settings/staging.py
+* see django-settings.template.py (should already be in weborchestra/settings/{settings_name}.py after fab deploy)
 * replace email, database and sentry placeholders with server values
-* replace SERVER_SECRET_KEY with a new generated secret_key
-* replace SITENAME with, e.g, staging.my-domain.com
-* install sentry_sdk with pip in virtualenv
 
 ## Nginx Virtual Host config
 
@@ -36,7 +32,7 @@ eg, on Ubuntu
 * see gunicorn-supervisor.template.conf
 * replace SITENAME with, e.g., staging.my-domain.com
 * replace USER with server super user
-* replace SERVER_DJANGO_SETTINGS_MODULE with, e.g., weborchestra.settings.staging (depending on how you named your django settings module)
+* replace SETTINGS_NAME with, e.g., weborchestra.settings.{settings_name} (depending on how you named your django settings module)
 
 ## Folder structure
 

@@ -3,27 +3,32 @@ import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 
 
-SECRET_KEY = 'SERVER_SECRET_KEY'
 DEBUG = False
 ALLOWED_HOSTS = ['SITENAME', 'www.SITENAME']
 
+## Server database settings
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
+        'ENGINE': 'DB_ENGINE',
         'NAME': 'DB_NAME',
         'USER': 'DB_USER',
         'PASSWORD': 'DB_PASSWORD',
         'HOST': '',
-        'PORT': '5432'
+        'PORT': 'DB_PORT'
     }
 }
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+## Server email settings
+
+EMAIL_BACKEND = 'SERVER_EMAIL_BACKEND'
 EMAIL_HOST = 'SERVER_EMAIL_HOST'
 EMAIL_USE_TLS = True
-EMAIL_PORT = 587
+EMAIL_PORT = SERVER_EMAIL_PORT
 EMAIL_HOST_USER = 'SERVER_EMAIL_HOST_USER'
 EMAIL_HOST_PASSWORD = 'SERVER_EMAIL_HOST_PASSWORD'
+
+## Sentry settings
 
 sentry_sdk.init(
     dsn="SENTRY_DSN_URL",
