@@ -1,5 +1,6 @@
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.conf import settings
+from django.core import mail
 from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
 import time
@@ -77,3 +78,9 @@ class FunctionalTest(StaticLiveServerTestCase):
             create_activated_account_on_server(self.staging_server, email, password)
         else:
             create_activated_account(email, password)
+
+    def wait_for_email(self, test_email, subject):
+        email = mail.outbox[0]
+        self.assertIn(test_email, email.to)
+        self.assertEqual(email.subject, subject)
+        return email.body
