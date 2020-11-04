@@ -26,7 +26,7 @@ class ResetPasswordTest(FunctionalTest):
         # She is then redirected to the forgot password page
         self.wait_for(lambda: self.assertEqual(
             self.browser.find_element_by_tag_name('h1').text,
-            "Demander la réinitialisation du mot de passe"
+            "Demander la réinitialisation du mot de passe".upper()
         ))
 
         # She is invited to complete a form
@@ -38,17 +38,19 @@ class ResetPasswordTest(FunctionalTest):
 
         # When she hits enter the page reload and a confirmation message appear
         inputbox_email.send_keys(Keys.ENTER)
-        self.wait_for(lambda: self.assertEqual(
-            self.browser.find_element_by_id('reset_password_sent_message'),
-            "Si un compte est bien associé à l'email fourni vous devriez recevoir un"
-            " lien pour réinitialiser votre mot de passe."
+        self.wait_for(lambda: self.assertIn(
+            f"Si l'adresse {test_email} correspond bien à un compte actif tu vas recevoir un mail",
+            self.browser.find_element_by_id('password_reset_done').text
         ))
 
         # She checks her emails and finds a message
-        body = self.wait_for_email(test_email, 'Demande de réinitialisation de mot de passe')
+        body = self.wait_for_email(
+            test_email,
+            f'Demande de réinitialisation de mot de passe sur {self.live_server_url.replace("http://", "")}'
+        )
 
         # It has a url link in it
-        self.assertIn('Use this link to log in', body)
+        self.assertIn('Sinon veuillez cliquer sur le lien suivant pour créer un nouveau mot de passe:', body)
         url_search = re.search(r'http://.+/.+$', body)
         if not url_search:
             self.fail(f'Could not find url in email body:\n{body}')
@@ -61,13 +63,13 @@ class ResetPasswordTest(FunctionalTest):
         # She is redirected to a page where she can set a new password
         self.wait_for(lambda: self.assertEqual(
             self.browser.find_element_by_tag_name('h1').text,
-            "Créer un nouveau mot de passe"
+            "Créer un nouveau mot de passe".upper()
         ))
 
         # she is invited to complete the new password form
-        inputbox_password = self.browser.find_element_by_id('id_password')
+        inputbox_password = self.browser.find_element_by_id('id_new_password1')
         self.check_for_placeholder_value_of_element(inputbox_password, '********')
-        inputbox_confirm_password = self.browser.find_element_by_id('id_confirm_password')
+        inputbox_confirm_password = self.browser.find_element_by_id('id_new_password2')
         self.check_for_placeholder_value_of_element(inputbox_confirm_password, '********')
 
         # She complete the form
@@ -79,7 +81,7 @@ class ResetPasswordTest(FunctionalTest):
         self.wait_to_be_logged_in(email=test_email)
 
         # Now she logs out
-        self.browser.find_element_by_link_text('Log out').click()
+        self.browser.find_element_by_link_text('Se déconnecter'.upper()).click()
 
         # She is logged out
         self.wait_to_be_logged_out(email=test_email)

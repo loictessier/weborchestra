@@ -1,12 +1,17 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth.models import User
+from django.contrib.auth.views import PasswordResetConfirmView
 from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
+from django.urls import reverse_lazy
 
-from user.forms import SignupForm, SigninForm
-from django.contrib.auth.models import User
+from user.forms import (
+    SignupForm, SigninForm,
+    PasswordResetForm, SetPasswordForm
+)
 from user.tokens import account_activation_token
 
 import logging
@@ -86,3 +91,25 @@ def signin(request):
 def signout(request):
     logout(request)
     return redirect('/')
+
+
+def password_reset(request):
+    form = PasswordResetForm(data=request.POST)
+    if form.is_valid():
+        email = form.cleaned_data.get('email')
+        form.save(
+            use_https=request.is_secure(),
+            from_email=None,
+            subject_template_name='registration/password_reset_subject.txt',
+            email_template_name='registration/password_reset_email.html',
+            token_generator=account_activation_token,
+            request=request)
+        return render(request, 'registration/password_reset_done.html', {'email': email})
+    return render(request, 'registration/password_reset_form.html', {'form': form})
+
+
+class PasswordResetConfirm(PasswordResetConfirmView):
+    form_class = SetPasswordForm
+    post_reset_login = True
+    success_url = reverse_lazy('user:password_reset_complete')
+    token_generator = account_activation_token

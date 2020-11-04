@@ -5,12 +5,17 @@ from django.utils.encoding import force_bytes
 from django.contrib.auth.models import User
 from django.core import mail
 from django.urls import reverse
+from django.http import HttpRequest
 from unittest.mock import patch
+import unittest
 
 from user.models import Profile
-from user.views import ACCOUNT_ACTIVATION_EMAIL_SUBJECT
+from user.views import (
+    ACCOUNT_ACTIVATION_EMAIL_SUBJECT,
+    password_reset
+)
 from user.forms import (
-    SignupForm, SigninForm,
+    SignupForm, SigninForm, PasswordResetForm,
     EMPTY_EMAIL_ERROR
 )
 from user.tokens import account_activation_token
@@ -163,3 +168,77 @@ class SignoutTest(TestCase):
         mock_logout.return_value = None
         self.client.get('/auth/signout')
         mock_logout.assert_called_once()
+
+
+class PasswordResetViewIntegratedTest(TestCase):
+
+    def setUp(self):
+        self.new_user = User.objects.create_user('edith@example.com', 'edith@example.com', 'Django4321')
+        self.new_user.is_active = True
+        self.new_user.profile.signup_confirmation = True
+        self.new_user.save()
+
+    def test_uses_password_reset_form(self):
+        response = self.client.get('/auth/password_reset')
+        self.assertIsInstance(response.context['form'], PasswordResetForm)
+
+    def test_can_send_a_mail_if_user_exists(self):
+        self.client.post('/auth/password_reset', {'email': 'edith@example.com'})
+        self.assertEqual(len(mail.outbox), 1)
+        sent_mail = mail.outbox[0]
+        self.assertIn('edith@example.com', sent_mail.body)
+
+    def test_for_invalid_input_doesnt_send_email_but_shows_errors(self):
+        response = self.client.post('/auth/password_reset', data={'email': ''})
+        self.assertEqual(len(mail.outbox), 0)
+        self.assertContains(response, escape(EMPTY_EMAIL_ERROR))
+
+
+@patch('user.views.PasswordResetForm')
+class PasswordResetViewUnitTest(unittest.TestCase):
+
+    def setUp(self):
+        self.request = HttpRequest()
+        self.request.POST['email'] = 'edith@example.com'
+
+    def test_passes_POST_data_to_PasswordResetForm(self, mockPasswordResetForm):
+        password_reset(self.request)
+        mockPasswordResetForm.assert_called_once_with(data=self.request.POST)
+
+    def test_call_form_save_if_form_valid(self, mockPasswordResetForm):
+        mock_form = mockPasswordResetForm.return_value
+        mock_form.is_valid.return_value = True
+        password_reset(self.request)
+        mock_form.save.assert_called_once()
+
+    @patch('user.views.render')
+    def test_render_password_reset_sent_if_form_valid(
+        self, mock_render, mockPasswordResetForm
+    ):
+        mock_form = mockPasswordResetForm.return_value
+        mock_form.is_valid.return_value = True
+
+        response = password_reset(self.request)
+
+        self.assertEqual(response, mock_render.return_value)
+        mock_render.assert_called_once_with(
+            self.request,
+            'registration/password_reset_done.html',
+            {'email': mock_form.cleaned_data.get('email')}
+        )
+
+    @patch('user.views.render')
+    def test_renders_password_reset_with_form_if_form_invalid(
+        self, mock_render, mockPasswordResetForm
+    ):
+        mock_form = mockPasswordResetForm.return_value
+        mock_form.is_valid.return_value = False
+
+        response = password_reset(self.request)
+
+        self.assertEqual(response, mock_render.return_value)
+        mock_render.assert_called_once_with(
+            self.request,
+            'registration/password_reset_form.html',
+            {'form': mock_form}
+        )

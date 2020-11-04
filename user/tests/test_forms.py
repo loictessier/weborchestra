@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from model_bakery import baker
 
 from user.forms import (
-    SignupForm, SigninForm,
+    SignupForm, SigninForm, PasswordResetForm, SetPasswordForm,
     EMPTY_EMAIL_ERROR, DUPLICATE_USER_ERROR
 )
 
@@ -62,3 +62,24 @@ class SigninFormTest(TestCase):
     def test_form_renders_password_input(self):
         form = SigninForm()
         self.assertIn('placeholder="********', form.as_p())
+
+
+class PasswordResetFormTest(TestCase):
+
+    def test_form_renders_email_input(self):
+        form = PasswordResetForm()
+        self.assertIn('placeholder="exemple@adresse.com"', form.as_p())
+
+    def test_form_validation_for_blank_email(self):
+        form = PasswordResetForm(data={'email': ''})
+        self.assertFalse(form.is_valid())
+        self.assertEqual(form.errors['email'], [EMPTY_EMAIL_ERROR])
+
+
+class SetPasswordFormTest(TestCase):
+
+    def test_form_renders_password_inputs(self):
+        form = SetPasswordForm('test@example.com')
+        self.assertIn('placeholder="********"', form.as_p())
+        self.assertIn('id="id_new_password1"', form.as_p())
+        self.assertIn('id="id_new_password2"', form.as_p())
