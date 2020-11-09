@@ -1,9 +1,15 @@
-from django import forms
 from django.contrib.auth.models import User
+from django.contrib.sites.shortcuts import get_current_site
+from django.template.loader import render_to_string
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
+from django import forms
 from django.contrib.auth.forms import (
     UserCreationForm, AuthenticationForm,
     PasswordResetForm, SetPasswordForm
 )
+
+from user.tokens import account_activation_token
 
 EMPTY_EMAIL_ERROR = "Vous ne pouvez pas avoir un champ email vide."
 DUPLICATE_USER_ERROR = "Un utilisateur correspondant à cette adresse email existe déjà."
@@ -24,13 +30,47 @@ class SignupForm(UserCreationForm):
         }
     )
 
+    def save(self, request,
+             subject_template_name='registration/activation_request_subject.txt',
+             email_template_name='registration/activation_request_email.html'):
+        email = self.cleaned_data['email']
+        users = self.get_users(email)
+        current_site = get_current_site(request)
+        if users.exists() and not users[0].is_active:
+            self.send_confirm_email(users[0], current_site, subject_template_name, email_template_name)
+            return users[0]
+        else:
+            email = self.cleaned_data.get('email')
+            password = self.cleaned_data.get('password1')
+            user = User.objects.create_user(email, email, password)
+            # user can't login until link confirmed
+            user.is_active = False
+            user.save()
+            self.send_confirm_email(user, current_site, subject_template_name, email_template_name)
+            return user
+
     def clean_email(self):
         email = self.cleaned_data['email']
-        if User.objects.exclude(pk=self.instance.pk).filter(username=email).exists():
+        users = self.get_users(email)
+        if users.exists() and users[0].is_active:
             raise forms.ValidationError(
                 self.error_messages['email_duplicate']
             )
         return email
+
+    def get_users(self, email):
+        return User.objects.exclude(pk=self.instance.pk).filter(username=email)
+
+    def send_confirm_email(self, user, current_site,
+                           subject_template_name, email_template_name):
+        subject = render_to_string(subject_template_name, {'site_name': current_site.name})
+        message = render_to_string(email_template_name, {
+            'user': user,
+            'domain': current_site.domain,
+            'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+            'token': account_activation_token.make_token(user),
+        })
+        user.email_user(subject, message)
 
     def __init__(self, *args, **kwargs):
         super(SignupForm, self).__init__(*args, **kwargs)

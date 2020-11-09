@@ -10,10 +10,7 @@ from unittest.mock import patch
 import unittest
 
 from user.models import Profile
-from user.views import (
-    ACCOUNT_ACTIVATION_EMAIL_SUBJECT,
-    password_reset
-)
+from user.views import password_reset, signup
 from user.forms import (
     SignupForm, SigninForm, PasswordResetForm,
     EMPTY_EMAIL_ERROR
@@ -21,7 +18,7 @@ from user.forms import (
 from user.tokens import account_activation_token
 
 
-class SignupTest(TestCase):
+class SignupViewIntegratedTest(TestCase):
 
     def test_uses_signup_template(self):
         response = self.client.get('/auth/signup')
@@ -35,11 +32,6 @@ class SignupTest(TestCase):
         response = self.client.get('/auth/signup')
         self.assertIsInstance(response.context['form'], SignupForm)
 
-    def test_for_invalid_input_renders_signup_templates(self):
-        response = self.client.post('/auth/signup', data={'email': ''})
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'user/signup.html')
-
     def test_validation_errors_are_shown_on_signup_page(self):
         response = self.client.post('/auth/signup', data={'email': ''})
         self.assertContains(response, escape(EMPTY_EMAIL_ERROR))
@@ -47,29 +39,7 @@ class SignupTest(TestCase):
     def test_for_invalid_input_passes_form_to_template(self):
         response = self.client.post('/auth/signup', data={'email': ''})
         self.assertIsInstance(response.context['form'], SignupForm)
-
-    def test_can_save_a_POST_request(self):
-        self.client.post('/auth/signup', data={
-            'email': 'example@email.test',
-            'password1': 'Django4521',
-            'password2': 'Django4521'
-        })
-        self.assertEqual(User.objects.count(), 1)
-        self.assertEqual(Profile.objects.count(), 1)
-        new_profile = Profile.objects.first()
-        self.assertEqual(new_profile.user.email, 'example@email.test')
-        self.assertFalse(new_profile.user.is_active)
-
-    def test_send_mail_after_POST(self):
-        self.client.post('/auth/signup', data={
-            'email': 'example@email.test',
-            'password1': 'Django4521',
-            'password2': 'Django4521'
-        })
-        self.assertEqual(len(mail.outbox), 1)
-        sent_mail = mail.outbox[0]
-        self.assertEqual(sent_mail.subject, ACCOUNT_ACTIVATION_EMAIL_SUBJECT)
-        self.assertIn('example@email.test', sent_mail.body)
+        self.assertTemplateUsed(response, 'user/signup.html')
 
     def test_redirects_after_POST(self):
         response = self.client.post('/auth/signup', data={
@@ -79,6 +49,48 @@ class SignupTest(TestCase):
         })
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response['location'], '/auth/sent')
+
+
+@patch('user.views.SignupForm')
+class SignupViewUnitTest(unittest.TestCase):
+
+    def setUp(self):
+        self.request = HttpRequest()
+        self.request.POST['email'] = 'edith@example.com'
+
+    def test_call_form_save_if_form_valid(self, mockSignupForm):
+        mock_form = mockSignupForm.return_value
+        mock_form.is_valid.return_value = True
+        signup(self.request)
+        mock_form.save.assert_called_once()
+
+    @patch('user.views.redirect')
+    def test_render_password_reset_sent_if_form_valid(
+        self, mock_redirect, mockSignupForm
+    ):
+        mock_form = mockSignupForm.return_value
+        mock_form.is_valid.return_value = True
+
+        response = signup(self.request)
+
+        self.assertEqual(response, mock_redirect.return_value)
+        mock_redirect.assert_called_once_with('/auth/sent')
+
+    @patch('user.views.render')
+    def test_renders_password_reset_with_form_if_form_invalid(
+        self, mock_render, mockSignupForm
+    ):
+        mock_form = mockSignupForm.return_value
+        mock_form.is_valid.return_value = False
+
+        response = signup(self.request)
+
+        self.assertEqual(response, mock_render.return_value)
+        mock_render.assert_called_once_with(
+            self.request,
+            'user/signup.html',
+            {'form': mock_form}
+        )
 
 
 class ActivationSentTest(TestCase):

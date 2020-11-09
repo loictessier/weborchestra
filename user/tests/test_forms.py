@@ -1,14 +1,21 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
+from django.core import mail
+from django.http import HttpRequest
 from model_bakery import baker
+from unittest.mock import patch
 
 from user.forms import (
     SignupForm, SigninForm, PasswordResetForm, SetPasswordForm,
     EMPTY_EMAIL_ERROR, DUPLICATE_USER_ERROR
 )
+from user.models import Profile
 
 
 class SignupFormTest(TestCase):
+
+    def setUp(self):
+        self.request = HttpRequest()
 
     def test_form_renders_email_input(self):
         form = SignupForm()
@@ -41,15 +48,63 @@ class SignupFormTest(TestCase):
             ['Les deux mots de passe ne correspondent pas.']
         )
 
-    def test_form_validation_for_duplicate_user(self):
-        self.user1 = baker.make(User, username='test@test.test', email='test@test.test')
+    def test_form_validation_for_duplicate_active_user(self):
+        self.user1 = baker.make(
+            User,
+            username='test@test.test',
+            email='test@test.test',
+            is_active=True,
+        )
         form = SignupForm(data={
             'email': self.user1.email,
-            'password1': 'abcdef123',
-            'password2': 'abcdef123'
+            'password1': 'GoodPassword1234',
+            'password2': 'GoodPassword1234'
         })
         self.assertFalse(form.is_valid())
         self.assertEqual(form.errors['email'], [DUPLICATE_USER_ERROR])
+
+    def test_form_validation_for_duplicate_inactive_user(self):
+        self.user1 = baker.make(
+            User,
+            username='test@test.test',
+            email='test@test.test',
+            is_active=False,
+        )
+        form = SignupForm(data={
+            'email': self.user1.email,
+            'password1': 'GoodPassword1234',
+            'password2': 'GoodPassword1234'
+        })
+        self.assertTrue(form.is_valid())
+        self.assertEqual(len(form.errors), 0)
+
+    @patch('user.forms.get_current_site')
+    def test_valid_form_create_user(self, mock_get_current_site):
+        form = SignupForm(data={
+            'email': 'example@email.test',
+            'password1': 'GoodPassword1234',
+            'password2': 'GoodPassword1234'
+        })
+        self.assertTrue(form.is_valid())
+        form.save(self.request)
+        self.assertEqual(User.objects.count(), 1)
+        self.assertEqual(Profile.objects.count(), 1)
+        new_profile = Profile.objects.first()
+        self.assertEqual(new_profile.user.email, 'example@email.test')
+        self.assertFalse(new_profile.user.is_active)
+
+    @patch('user.forms.get_current_site')
+    def test_valid_form_send_mail(self, mock_get_current_site):
+        form = SignupForm(data={
+            'email': 'example@email.test',
+            'password1': 'GoodPassword1234',
+            'password2': 'GoodPassword1234'
+        })
+        self.assertTrue(form.is_valid())
+        form.save(self.request)
+        self.assertEqual(len(mail.outbox), 1)
+        sent_mail = mail.outbox[0]
+        self.assertIn('example@email.test', sent_mail.body)
 
 
 class SigninFormTest(TestCase):

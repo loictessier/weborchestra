@@ -53,6 +53,11 @@ class FunctionalTest(StaticLiveServerTestCase):
         self.assertIn('Se connecter'.upper(), navbar.text)
         self.assertIn("S'inscrire".upper(), navbar.text)
 
+    @wait
+    def wait_to_be_at_home_page(self):
+        active_nav_link = self.browser.find_elements_by_css_selector('nav#menu li.active>a')
+        self.assertEqual(active_nav_link[0].text, 'Accueil'.upper())
+
     def check_for_placeholder_value_of_element(self, element, placeholder_value):
         self.assertEqual(
             element.get_attribute('placeholder'),
