@@ -20,5 +20,6 @@ from django.conf.urls import include
 urlpatterns = [
     path('', include('core.urls', namespace='core')),
     path('auth/', include('user.urls', namespace='user')),
+    path('music-library/', include('music_library.urls', namespace='music_library')),
     path('admin/', admin.site.urls),
 ]

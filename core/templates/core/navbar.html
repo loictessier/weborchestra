@@ -10,6 +10,7 @@
         <div class="collapse navbar-collapse navbar-ex1-collapse">
             <ul class="nav navbar-nav">
                 <li class="{% if request.resolver_match.url_name == 'index' %}active{% endif %}"><a href="{% url 'core:index' %}">Accueil</a></li>
+                <li class="{% if request.resolver_match.url_name == 'music_library' %}active{% endif %}"><a href="{% url 'music_library:music_library' %}">Partothèque</a></li>
                 {% if request.user.is_authenticated %}
                     <li class="{% if request.resolver_match.url_name == 'signout' %}active{% endif %}"><a href="{% url 'user:signout' %}">Se déconnecter</a></li>
                 {% else %}

@@ -24,7 +24,7 @@ class NewMusicSheetTest(FunctionalTest):
         ))
 
         # She click on the "add music sheet" button
-        self.browser.find_elements_by_link_text('Ajouter une partition')
+        self.browser.find_elements_by_link_text('Ajouter une partition').click()
 
         # She is redirected to a form to create a music sheet
         self.wait_for(lambda: self.assertEqual(
