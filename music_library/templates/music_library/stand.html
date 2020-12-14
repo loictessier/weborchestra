@@ -1,0 +1,17 @@
+{% extends "core/base.html" %}
+{% block title %} Int'Aire'Mezzo | Nouvelle partition {% endblock %}
+{% block page-title %}{{ stand }}{% endblock %}
+
+
+{% block content %}
+    <section class="box-content">
+        <div class="container">
+            <div class="row" style="padding-top: 4em;">
+                <div id="id_name" class="col-lg-12">{{ stand.name }}</div>
+                <div class="col-lg-12">
+                    <a id="id_score_link" href="{{ stand.score.url }}" download>Télécharger la partition</a>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock content %}

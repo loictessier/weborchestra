@@ -1,14 +1,17 @@
+import time
+import os
+
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.conf import settings
 from django.core import mail
+
 from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
-import time
-import os
 
 from .server_tools import reset_database, create_session_on_server, create_activated_account_on_server
 from .management.commands.create_session import create_pre_authenticated_session
 from .management.commands.create_account import create_activated_account
+from music_library.models import MusicScore
 
 MAX_WAIT = 10
 
@@ -89,3 +92,10 @@ class FunctionalTest(StaticLiveServerTestCase):
         self.assertIn(test_email, email.to)
         self.assertEqual(email.subject, subject)
         return email.body
+
+    def create_basic_music_score(self, name, author, editor):
+        MusicScore.objects.create(
+            name=name,
+            author=author,
+            editor=editor
+        )

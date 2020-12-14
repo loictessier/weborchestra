@@ -19,7 +19,7 @@ eg, on Ubuntu
 ## Django server settings module 
 
 * see django-settings.template.py (should already be at weborchestra/settings/{settings_name}.py after fab deploy)
-* replace email, database and sentry placeholders with server values
+* replace email, database, sentry and dropbox placeholders with server values
 
 ## Nginx Virtual Host config
 
