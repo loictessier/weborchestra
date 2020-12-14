@@ -145,3 +145,6 @@ LOGGING = {
 # https://docs.djangoproject.com/fr/3.0/topics/email/
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.abspath(os.path.join(BASE_DIR, '../media'))
