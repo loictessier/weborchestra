@@ -39,7 +39,9 @@ class ResetPasswordTest(FunctionalTest):
         # When she hits enter the page reload and a confirmation message appear
         inputbox_email.send_keys(Keys.ENTER)
         self.wait_for(lambda: self.assertIn(
-            f"Si l'adresse {test_email} correspond bien à un compte actif tu vas recevoir un mail",
+            f"Si l'adresse {test_email} correspond bien à un compte actif, "
+            "vous allez recevoir un mail contenant les instructions pour "
+            "changer votre mot de passe.",
             self.browser.find_element_by_id('password_reset_done').text
         ))
 
