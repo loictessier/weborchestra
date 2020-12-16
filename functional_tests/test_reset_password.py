@@ -26,7 +26,7 @@ class ResetPasswordTest(FunctionalTest):
         # She is then redirected to the forgot password page
         self.wait_for(lambda: self.assertEqual(
             self.browser.find_element_by_tag_name('h1').text,
-            "Demander la réinitialisation du mot de passe".upper()
+            "Réinitialiser le mot de passe".upper()
         ))
 
         # She is invited to complete a form
