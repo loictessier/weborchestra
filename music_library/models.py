@@ -25,8 +25,16 @@ class MusicScore(models.Model):
 
 
 class Instrument(models.Model):
-    name = models.TextField('Nom', max_length=50, unique=True)
+    name = models.TextField('Nom', max_length=50)
     music_score = models.ForeignKey('MusicScore', on_delete=models.CASCADE)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['name', 'music_score'],
+                name='unique_score_instrument_name'
+            )
+        ]
 
     def get_absolute_url(self):
         return reverse('music_library:view_instrument', args=[self.music_score.id, self.id])
@@ -36,9 +44,17 @@ class Instrument(models.Model):
 
 
 class Stand(models.Model):
-    name = models.TextField('Nom', max_length=50, unique=True)
+    name = models.TextField('Nom', max_length=50)
     score = models.FileField(verbose_name='Partition', upload_to=stand_file_path)
     instrument = models.ForeignKey('Instrument', on_delete=models.CASCADE)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['name', 'instrument'],
+                name='unique_instrument_stand_name'
+            )
+        ]
 
     def get_absolute_url(self):
         return reverse('music_library:view_stand', args=[self.instrument.music_score.id, self.instrument.id, self.id])

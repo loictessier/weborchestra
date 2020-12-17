@@ -1,9 +1,13 @@
-from unittest.mock import patch, Mock, MagicMock
+from unittest.mock import patch, MagicMock
 
 from django.utils.html import escape
 from django.test import TestCase
 
-from music_library.forms import ScoreForm, InstrumentForm, StandForm
+from music_library.forms import (
+    ScoreForm, InstrumentForm, StandForm,
+    DUPLICATE_INSTRUMENT_ERROR, DUPLICATE_STAND_ERROR
+)
+from music_library.models import MusicScore, Instrument, Stand
 
 
 class ScoreFormTest(TestCase):
@@ -44,10 +48,14 @@ class ScoreFormTest(TestCase):
 class InstrumentFormtest(TestCase):
 
     def setUp(self):
-        self.music_score = Mock()
+        self.music_score = MusicScore.objects.create(
+            name='T-Bones In Swing',
+            author='George Gershwin',
+            editor='Molenaar Edition'
+        )
 
     def test_form_render_inputs(self):
-        form = InstrumentForm(data={})
+        form = InstrumentForm(self.music_score, data={})
         self.assertIn('id="id_name"', form.as_p())
         name_placeholder = escape("Nom de l'instrument")
         self.assertIn(f'placeholder="{name_placeholder}"', form.as_p())
@@ -56,25 +64,43 @@ class InstrumentFormtest(TestCase):
     def test_save_returns_new_instrument_from_post_data(
         self, mock_Instrument
     ):
-        form = InstrumentForm(data={
+        form = InstrumentForm(self.music_score, data={
             'name': 'Hautbois'
         })
         form.is_valid()
-        form.save(self.music_score)
+        form.save()
         mock_Instrument.objects.create.assert_called_once_with(
             name='Hautbois',
             music_score=self.music_score
         )
 
+    def test_raise_validation_error_for_duplicate_instrument(self):
+        Instrument.objects.create(
+            name='Hautbois',
+            music_score=self.music_score
+        )
+        form = InstrumentForm(self.music_score, data={
+            'name': 'Hautbois'
+        })
+        form.is_valid()
+        self.assertIn(DUPLICATE_INSTRUMENT_ERROR, form.errors['name'])
+
 
 class StandFormtest(TestCase):
 
     def setUp(self):
-        self.music_score = Mock()
-        self.instrument = Mock(music_score=self.music_score)
+        self.music_score = MusicScore.objects.create(
+            name='T-Bones In Swing',
+            author='George Gershwin',
+            editor='Molenaar Edition'
+        )
+        self.instrument = Instrument.objects.create(
+            name='Hautbois',
+            music_score=self.music_score
+        )
 
     def test_form_render_inputs(self):
-        form = StandForm(data={})
+        form = StandForm(instrument=self.instrument, data={})
         self.assertIn('id="id_name"', form.as_p())
         self.assertIn('placeholder="Nom du pupitre"', form.as_p())
 
@@ -84,6 +110,7 @@ class StandFormtest(TestCase):
     ):
         mock_file = MagicMock(name='hautbois1.pdf')
         form = StandForm(
+            instrument=self.instrument,
             data={
                 'name': 'Hautbois 1'
             },
@@ -92,9 +119,27 @@ class StandFormtest(TestCase):
             }
         )
         form.is_valid()
-        form.save(self.instrument)
+        form.save()
         mock_Stand.objects.create.assert_called_once_with(
             name='Hautbois 1',
             score=mock_file,
             instrument=self.instrument
         )
+
+    def test_raise_validation_error_for_duplicate_stand(self):
+        Stand.objects.create(
+            name='Hautbois 1',
+            score='hautbois1.pdf',
+            instrument=self.instrument,
+        )
+        form = StandForm(
+            instrument=self.instrument,
+            data={
+                'name': 'Hautbois 1'
+            },
+            files={
+                'score': 'hautbois1.pdf'
+            }
+        )
+        form.is_valid()
+        self.assertIn(DUPLICATE_STAND_ERROR, form.errors['name'])

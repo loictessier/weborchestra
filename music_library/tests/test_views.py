@@ -119,13 +119,16 @@ class NewInstrumentViewUnitTest(TestCase):
         self, mock_InstrumentForm
     ):
         new_instrument(self.request, self.music_score.id)
-        mock_InstrumentForm.assert_called_once_with(data=self.request.POST)
+        mock_InstrumentForm.assert_called_once_with(
+            music_score=self.music_score,
+            data=self.request.POST
+        )
 
     def test_saves_form_if_form_valid(self, mock_InstrumentForm):
         mock_form = mock_InstrumentForm.return_value
         mock_form.is_valid.return_value = True
         new_instrument(self.request, self.music_score.id)
-        mock_form.save.assert_called_once_with(self.music_score)
+        mock_form.save.assert_called_once()
 
     @patch('music_library.views.redirect')
     def test_redirects_to_form_returned_object_if_form_valid(
@@ -213,13 +216,17 @@ class NewStandViewUnitTest(TestCase):
         self, mock_StandForm
     ):
         new_stand(self.request, self.music_score.id, self.instrument.id)
-        mock_StandForm.assert_called_once_with(data=self.request.POST, files=self.request.FILES)
+        mock_StandForm.assert_called_once_with(
+            instrument=self.instrument,
+            data=self.request.POST,
+            files=self.request.FILES
+        )
 
     def test_saves_form_if_form_valid(self, mock_StandForm):
         mock_form = mock_StandForm.return_value
         mock_form.is_valid.return_value = True
         new_stand(self.request, self.music_score.id, self.instrument.id)
-        mock_form.save.assert_called_once_with(self.instrument)
+        mock_form.save.assert_called_once()
 
     @patch('music_library.views.redirect')
     def test_redirects_to_form_returned_object_if_form_valid(

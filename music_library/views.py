@@ -24,10 +24,10 @@ def view_score(request, score_id):
 
 
 def new_instrument(request, score_id):
-    form = InstrumentForm(data=request.POST)
+    music_score = MusicScore.objects.get(id=score_id)
+    form = InstrumentForm(music_score=music_score, data=request.POST)
     if form.is_valid():
-        music_score = MusicScore.objects.get(id=score_id)
-        instrument = form.save(music_score)
+        instrument = form.save()
         return redirect(str(instrument.get_absolute_url()))
     return render(request, 'music_library/new_instrument.html', {'form': form})
 
@@ -42,10 +42,10 @@ def view_instrument(request, score_id, instrument_id):
 
 
 def new_stand(request, score_id, instrument_id):
-    form = StandForm(data=request.POST, files=request.FILES)
+    instrument = Instrument.objects.get(id=instrument_id)
+    form = StandForm(instrument=instrument, data=request.POST, files=request.FILES)
     if form.is_valid():
-        instrument = Instrument.objects.get(id=instrument_id)
-        stand = form.save(instrument)
+        stand = form.save()
         return redirect(str(stand.get_absolute_url()))
     return render(request, 'music_library/new_stand.html', {'form': form})
 
