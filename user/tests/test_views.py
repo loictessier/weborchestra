@@ -8,7 +8,6 @@ from django.urls import reverse
 from django.http import HttpRequest
 
 from unittest.mock import patch
-import unittest
 
 from user.models import Profile
 from user.views import password_reset, signup
@@ -53,7 +52,7 @@ class SignupViewIntegratedTest(TestCase):
 
 
 @patch('user.views.SignupForm')
-class SignupViewUnitTest(unittest.TestCase):
+class SignupViewUnitTest(TestCase):
 
     def setUp(self):
         self.request = HttpRequest()
@@ -208,7 +207,7 @@ class PasswordResetViewIntegratedTest(TestCase):
 
 
 @patch('user.views.PasswordResetForm')
-class PasswordResetViewUnitTest(unittest.TestCase):
+class PasswordResetViewUnitTest(TestCase):
 
     def setUp(self):
         self.request = HttpRequest()
