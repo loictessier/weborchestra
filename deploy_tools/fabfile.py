@@ -1,21 +1,25 @@
-from fabric.contrib.files import append, exists, sed
+from fabric.contrib.files import append, exists
 from fabric.api import env, local, run
 import random
 
 REPO_URL = 'https://github.com/loictessier/weborchestra.git'
 
 
-# def test():
-#     print(f'home/{env.user}/sites/{env.host}/settings/test.py')
-#     upload_template('django-settings.template.py', f'/home/{env.user}/sites/{env.host}/settings/test.py')
+def deploy_production():
+    _deploy(settings_name='production')
 
-def deploy(settings_name='default'):
+
+def deploy_staging():
+    _deploy(settings_name='staging')
+
+
+def _deploy(settings_name='default'):
     site_folder = f'/home/{env.user}/sites/{env.host}'
     source_folder = site_folder + '/source'
     _create_directory_structure_if_necessary(site_folder)
     _get_latest_source(source_folder)
     _update_settings(source_folder, env.host, settings_name)
-    _update_virtualenv(source_folder)
+    _update_virtualenv(source_folder, settings_name)
     _update_static_files(source_folder)
     _update_database(source_folder, settings_name)
 
@@ -34,14 +38,7 @@ def _get_latest_source(source_folder):
     run(f'cd {source_folder} && git reset --hard {current_commit}')
 
 
-def _update_settings(source_folder, site_name, settings_name):
-    settings_path = source_folder + f'/weborchestra/settings/{settings_name}.py'
-    if not exists(settings_path):
-        run(f'cp {source_folder}/deploy_tools/django-settings.template.py {settings_path}')
-        sed(settings_path,
-            'SITENAME',
-            site_name)
-        run(f"echo '\nfrom .secret_key import SECRET_KEY' >> {settings_path}")
+def _update_settings(source_folder):
     secret_key_file = source_folder + '/weborchestra/settings/secret_key.py'
     if not exists(secret_key_file):
         chars = 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)'
@@ -49,11 +46,11 @@ def _update_settings(source_folder, site_name, settings_name):
         append(secret_key_file, f'SECRET_KEY = "{key}"')
 
 
-def _update_virtualenv(source_folder):
+def _update_virtualenv(source_folder, settings_name):
     virtualenv_folder = source_folder + '/../virtualenv'
     if not exists(virtualenv_folder + '/bin/pip'):
         run(f'python3.8 -m venv {virtualenv_folder}')
-    run(f'{virtualenv_folder}/bin/pip install -r {source_folder}/requirements.txt')
+    run(f'{virtualenv_folder}/bin/pip install -r {source_folder}/requirements/{settings_name}.txt')
 
 
 def _update_static_files(source_folder):

@@ -16,11 +16,6 @@ eg, on Ubuntu
     sudo apt-get install nginx supervisor git python3.8 python3.8-venv
     sudo apt-get install python3-pip
 
-## Django server settings module 
-
-* see django-settings.template.py (should already be at weborchestra/settings/{settings_name}.py after fab deploy)
-* replace email, database, sentry and dropbox placeholders with server values
-
 ## Nginx Virtual Host config
 
 * see nginx.template.conf
@@ -32,7 +27,8 @@ eg, on Ubuntu
 * see gunicorn-supervisor.template.conf
 * replace SITENAME with, e.g., staging.my-domain.com
 * replace USER with server super user
-* replace SETTINGS_NAME with, e.g., {settings_name} (depending on how you named the django settings module)
+* replace SETTINGS_NAME with, e.g., staging 
+* fill in all blank environment variables
 
 ## Folder structure
 
