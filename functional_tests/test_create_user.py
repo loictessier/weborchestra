@@ -1,5 +1,6 @@
-from selenium.webdriver.common.keys import Keys
 import re
+
+from selenium.webdriver.common.keys import Keys
 
 from .base import FunctionalTest
 

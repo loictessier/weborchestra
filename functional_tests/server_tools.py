@@ -1,6 +1,7 @@
+import os
+
 from fabric.api import run
 from fabric.context_managers import settings
-import os
 
 super_user = os.environ.get('SERVER_SUPER_USER')
 django_settings = os.environ.get('SERVER_DJANGO_SETTINGS_MODULE')

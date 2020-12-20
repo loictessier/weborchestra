@@ -1,8 +1,8 @@
-from .base import *
-from .secret_key import SECRET_KEY
-
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
+
+from .base import *
+from .secret_key import SECRET_KEY
 
 
 DEBUG = False

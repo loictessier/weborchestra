@@ -1,3 +1,5 @@
+import logging
+
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.models import User
@@ -11,8 +13,6 @@ from user.forms import (
     PasswordResetForm, SetPasswordForm
 )
 from user.tokens import account_activation_token
-
-import logging
 
 logger = logging.getLogger(__name__)
 

@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from django.core import mail
 from django.urls import reverse
 from django.http import HttpRequest
+
 from unittest.mock import patch
 import unittest
 

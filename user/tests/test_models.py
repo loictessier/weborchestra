@@ -1,6 +1,7 @@
 from django.test import TestCase
-from model_bakery import baker
 from django.contrib.auth.models import User
+
+from model_bakery import baker
 
 from user.models import Profile
 
