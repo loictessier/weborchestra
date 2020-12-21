@@ -6,7 +6,10 @@ from music_library.models import MusicScore, Instrument, Stand
 
 def music_library(request):
     music_scores = MusicScore.objects.all()
-    return render(request, 'music_library/music_library.html', {'music_scores': music_scores})
+    return render(
+        request,
+        'music_library/music_library.html',
+        {'music_scores': music_scores})
 
 
 def new_score(request):
@@ -20,7 +23,10 @@ def new_score(request):
 def view_score(request, score_id):
     score = MusicScore.objects.get(id=score_id)
     instruments = Instrument.objects.filter(music_score=score)
-    return render(request, 'music_library/score.html', {'score': score, 'instruments': instruments})
+    return render(
+        request,
+        'music_library/score.html',
+        {'score': score, 'instruments': instruments})
 
 
 def new_instrument(request, score_id):
@@ -29,7 +35,10 @@ def new_instrument(request, score_id):
     if form.is_valid():
         instrument = form.save()
         return redirect(str(instrument.get_absolute_url()))
-    return render(request, 'music_library/new_instrument.html', {'form': form})
+    return render(
+        request,
+        'music_library/new_instrument.html',
+        {'form': form})
 
 
 def view_instrument(request, score_id, instrument_id):
@@ -43,7 +52,11 @@ def view_instrument(request, score_id, instrument_id):
 
 def new_stand(request, score_id, instrument_id):
     instrument = Instrument.objects.get(id=instrument_id)
-    form = StandForm(instrument=instrument, data=request.POST, files=request.FILES)
+    form = StandForm(
+        instrument=instrument,
+        data=request.POST,
+        files=request.FILES
+    )
     if form.is_valid():
         stand = form.save()
         return redirect(str(stand.get_absolute_url()))
@@ -54,4 +67,7 @@ def view_stand(request, score_id, instrument_id, stand_id):
     score = MusicScore.objects.get(id=score_id)
     instrument = Instrument.objects.get(id=instrument_id)
     stand = Stand.objects.get(id=stand_id)
-    return render(request, 'music_library/stand.html', {'score': score, 'instrument': instrument, 'stand': stand})
+    return render(
+        request,
+        'music_library/stand.html',
+        {'score': score, 'instrument': instrument, 'stand': stand})

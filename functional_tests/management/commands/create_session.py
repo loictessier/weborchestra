@@ -16,12 +16,19 @@ class Command(BaseCommand):
         parser.add_argument('password')
 
     def handle(self, *args, **options):
-        session_key = create_pre_authenticated_session(options['email'], options['password'])
+        session_key = create_pre_authenticated_session(
+            options['email'],
+            options['password']
+        )
         self.stdout.write(session_key)
 
 
 def create_pre_authenticated_session(email, password):
-    user = User.objects.create_user(email=email, username=email, password=password)
+    user = User.objects.create_user(
+        email=email,
+        username=email,
+        password=password
+    )
     user.is_active = True
     user.profile.signup_confirmation = True
     user.save()

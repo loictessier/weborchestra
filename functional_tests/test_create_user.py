@@ -23,11 +23,20 @@ class NewUserTest(FunctionalTest):
 
         # she is invited to complete the signup form
         inputbox_email = self.browser.find_element_by_id('id_email')
-        self.check_for_placeholder_value_of_element(inputbox_email, 'exemple@adresse.com')
+        self.check_for_placeholder_value_of_element(
+            inputbox_email,
+            'exemple@adresse.com'
+        )
         inputbox_password1 = self.browser.find_element_by_id('id_password1')
-        self.check_for_placeholder_value_of_element(inputbox_password1, '********')
+        self.check_for_placeholder_value_of_element(
+            inputbox_password1,
+            '********'
+        )
         inputbox_password2 = self.browser.find_element_by_id('id_password2')
-        self.check_for_placeholder_value_of_element(inputbox_password2, '********')
+        self.check_for_placeholder_value_of_element(
+            inputbox_password2,
+            '********'
+        )
 
         # she types in his email and password
         test_email = 'edith.usertest@yahoo.com'
@@ -43,17 +52,24 @@ class NewUserTest(FunctionalTest):
             self.browser.find_element_by_tag_name('h1').text,
             'ACTIVATION DU COMPTE'
         ))
-        message = self.browser.find_element_by_id('activation_sent_message').text
+        message = (
+            self.browser.find_element_by_id('activation_sent_message').text
+        )
         self.assertIn("Votre lien d'activation a été envoyé !", message)
 
         # she checks her emails and finds a message
         body = self.wait_for_email(
             test_email,
-            f'Veuillez activer votre compte sur {self.live_server_url.replace("http://", "")}'
+            f'Veuillez activer votre compte sur'
+            f' {self.live_server_url.replace("http://", "")}'
         )
 
         # It has a url link in it
-        self.assertIn('Veuillez cliquer sur le lien suivant pour confirmer la création de votre compte:', body)
+        self.assertIn(
+            'Veuillez cliquer sur le lien suivant pour confirmer'
+            ' la création de votre compte:',
+            body
+        )
         url_search = re.search(r'http://.+/.+$', body)
         if not url_search:
             self.fail(f'Could not find url in email body:\n{body}')

@@ -86,8 +86,14 @@ def password_reset(request):
             email_template_name='registration/password_reset_email.html',
             token_generator=account_activation_token,
             request=request)
-        return render(request, 'registration/password_reset_done.html', {'email': email})
-    return render(request, 'registration/password_reset_form.html', {'form': form})
+        return render(
+            request,
+            'registration/password_reset_done.html',
+            {'email': email})
+    return render(
+        request,
+        'registration/password_reset_form.html',
+        {'form': form})
 
 
 class PasswordResetConfirm(PasswordResetConfirmView):

@@ -21,9 +21,15 @@ class SigninTest(FunctionalTest):
 
         # he is invited to complete the signin form
         inputbox_email = self.browser.find_element_by_id('id_email')
-        self.check_for_placeholder_value_of_element(inputbox_email, 'exemple@adresse.com')
+        self.check_for_placeholder_value_of_element(
+            inputbox_email,
+            'exemple@adresse.com'
+        )
         inputbox_password = self.browser.find_element_by_id('id_password')
-        self.check_for_placeholder_value_of_element(inputbox_password, '********')
+        self.check_for_placeholder_value_of_element(
+            inputbox_password,
+            '********'
+        )
 
         # he types in his email and password
         inputbox_email.send_keys(test_email)
@@ -39,7 +45,9 @@ class SigninTest(FunctionalTest):
         self.wait_to_be_logged_in(test_email)
 
         # he clicks on signout link and the page reload
-        self.browser.find_element_by_link_text('Se déconnecter'.upper()).click()
+        self.browser.find_element_by_link_text(
+            'Se déconnecter'.upper()
+        ).click()
 
         # he is logged out
         self.wait_to_be_logged_out(test_email)

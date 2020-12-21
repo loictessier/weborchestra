@@ -1,0 +1,8 @@
+[flake8]
+exclude = 
+    .git,
+    __pycache__,
+    urls.py,
+    admin.py,
+    */migrations/*.py,
+    */settings/*.py

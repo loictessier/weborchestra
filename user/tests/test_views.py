@@ -114,8 +114,12 @@ class ActivateTest(TestCase):
         )
         self.new_user.is_active = False
         self.new_user.save()
-        self.new_user_data['uid'] = urlsafe_base64_encode(force_bytes(self.new_user.pk))
-        self.new_user_data['token'] = account_activation_token.make_token(self.new_user)
+        self.new_user_data['uid'] = urlsafe_base64_encode(
+            force_bytes(self.new_user.pk)
+        )
+        self.new_user_data['token'] = account_activation_token.make_token(
+            self.new_user
+        )
 
     def test_uses_activation_invalid_template_fake_data(self):
         response = self.client.get(reverse('user:activate', kwargs={
@@ -139,7 +143,11 @@ class ActivateTest(TestCase):
 class SigninTest(TestCase):
 
     def setUp(self):
-        self.new_user = User.objects.create_user('django@test.test', 'django@test.test', 'Django4321')
+        self.new_user = User.objects.create_user(
+            'django@test.test',
+            'django@test.test',
+            'Django4321'
+        )
         self.new_user.is_active = True
         self.new_user.profile.signup_confirmation = True
         self.new_user.save()
@@ -185,7 +193,11 @@ class SignoutTest(TestCase):
 class PasswordResetViewIntegratedTest(TestCase):
 
     def setUp(self):
-        self.new_user = User.objects.create_user('edith@example.com', 'edith@example.com', 'Django4321')
+        self.new_user = User.objects.create_user(
+            'edith@example.com',
+            'edith@example.com',
+            'Django4321'
+        )
         self.new_user.is_active = True
         self.new_user.profile.signup_confirmation = True
         self.new_user.save()
@@ -195,7 +207,10 @@ class PasswordResetViewIntegratedTest(TestCase):
         self.assertIsInstance(response.context['form'], PasswordResetForm)
 
     def test_can_send_a_mail_if_user_exists(self):
-        self.client.post('/auth/password_reset', {'email': 'edith@example.com'})
+        self.client.post(
+            '/auth/password_reset',
+            {'email': 'edith@example.com'}
+        )
         self.assertEqual(len(mail.outbox), 1)
         sent_mail = mail.outbox[0]
         self.assertIn('edith@example.com', sent_mail.body)
@@ -213,7 +228,9 @@ class PasswordResetViewUnitTest(TestCase):
         self.request = HttpRequest()
         self.request.POST['email'] = 'edith@example.com'
 
-    def test_passes_POST_data_to_PasswordResetForm(self, mockPasswordResetForm):
+    def test_passes_POST_data_to_PasswordResetForm(
+        self, mockPasswordResetForm
+    ):
         password_reset(self.request)
         mockPasswordResetForm.assert_called_once_with(data=self.request.POST)
 

@@ -21,7 +21,11 @@ class StandFilePathUnitTest(TestCase):
             instrument=instrument
         )
         response = stand_file_path(stand, 'score_name.pdf')
-        self.assertEqual(response, 'partitions/T-Bones In Swing/Hautbois/T-Bones In Swing-Hautbois 1.pdf')
+        self.assertEqual(
+            response,
+            'partitions/T-Bones In Swing/'
+            'Hautbois/T-Bones In Swing-Hautbois 1.pdf'
+        )
 
 
 class MusicScoreModelTest(TestCase):
@@ -122,7 +126,7 @@ class StandModelTest(TestCase):
         )
 
     def test_string_representation(self):
-        
+
         Stand.objects.create(
             name='Hautbois 1',
             instrument=self.instrument1

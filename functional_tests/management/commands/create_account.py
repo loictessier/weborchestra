@@ -15,7 +15,11 @@ class Command(BaseCommand):
 
 
 def create_activated_account(email, password):
-    user = User.objects.create_user(email=email, username=email, password=password)
+    user = User.objects.create_user(
+        email=email,
+        username=email,
+        password=password
+    )
     user.is_active = True
     user.profile.signup_confirmation = True
     user.save()

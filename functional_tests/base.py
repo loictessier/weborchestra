@@ -8,8 +8,13 @@ from django.core import mail
 from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
 
-from .server_tools import reset_database, create_session_on_server, create_activated_account_on_server
-from .management.commands.create_session import create_pre_authenticated_session
+from .server_tools import (
+    reset_database, create_session_on_server,
+    create_activated_account_on_server
+)
+from .management.commands.create_session import (
+    create_pre_authenticated_session
+)
 from .management.commands.create_account import create_activated_account
 from music_library.models import MusicScore
 
@@ -58,10 +63,14 @@ class FunctionalTest(StaticLiveServerTestCase):
 
     @wait
     def wait_to_be_at_home_page(self):
-        active_nav_link = self.browser.find_elements_by_css_selector('nav#menu li.active>a')
+        active_nav_link = self.browser.find_elements_by_css_selector(
+            'nav#menu li.active>a'
+        )
         self.assertEqual(active_nav_link[0].text, 'Accueil'.upper())
 
-    def check_for_placeholder_value_of_element(self, element, placeholder_value):
+    def check_for_placeholder_value_of_element(
+        self, element, placeholder_value
+    ):
         self.assertEqual(
             element.get_attribute('placeholder'),
             placeholder_value
@@ -69,11 +78,15 @@ class FunctionalTest(StaticLiveServerTestCase):
 
     def create_pre_authenticated_session(self, email, password):
         if self.staging_server:
-            session_key = create_session_on_server(self.staging_server, email, password)
+            session_key = create_session_on_server(
+                self.staging_server,
+                email,
+                password
+            )
         else:
             session_key = create_pre_authenticated_session(email, password)
-        ## to set a cookie we need to first visit the domain.
-        ## 404 pages load the quickest
+        # to set a cookie we need to first visit the domain.
+        # 404 pages load the quickest
         self.browser.get(self.live_server_url + "/404_no_such_url/")
         self.browser.add_cookie(dict(
             name=settings.SESSION_COOKIE_NAME,
@@ -83,7 +96,11 @@ class FunctionalTest(StaticLiveServerTestCase):
 
     def create_activated_account(self, email, password):
         if self.staging_server:
-            create_activated_account_on_server(self.staging_server, email, password)
+            create_activated_account_on_server(
+                self.staging_server,
+                email,
+                password
+            )
         else:
             create_activated_account(email, password)
 

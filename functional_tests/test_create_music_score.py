@@ -27,7 +27,8 @@ class NewMusicScoreTest(FunctionalTest):
             "Partothèque".upper()
         ))
 
-        # She sees a message that says she has not yet access to any music score
+        # She sees a message that says she has not yet access
+        # to any music score
         self.wait_for(lambda: self.assertEqual(
             self.browser.find_element_by_id('id_no_score_message').text,
             "Il n'existe pas encore de partition à laquelle vous avez accès."
@@ -44,11 +45,20 @@ class NewMusicScoreTest(FunctionalTest):
 
         # she is invited to complete the form
         inputbox_name = self.browser.find_element_by_id('id_name')
-        self.check_for_placeholder_value_of_element(inputbox_name, 'Nom de la partition')
+        self.check_for_placeholder_value_of_element(
+            inputbox_name,
+            'Nom de la partition'
+        )
         inputbox_author = self.browser.find_element_by_id('id_author')
-        self.check_for_placeholder_value_of_element(inputbox_author, "Nom de l'auteur")
+        self.check_for_placeholder_value_of_element(
+            inputbox_author,
+            "Nom de l'auteur"
+        )
         inputbox_editor = self.browser.find_element_by_id('id_editor')
-        self.check_for_placeholder_value_of_element(inputbox_editor, "Nom de l'éditeur")
+        self.check_for_placeholder_value_of_element(
+            inputbox_editor,
+            "Nom de l'éditeur"
+        )
 
         # There she fills the form with required informations and hits enter
         music_score_name = 'T-Bones In Swing'
@@ -59,7 +69,8 @@ class NewMusicScoreTest(FunctionalTest):
         inputbox_editor.send_keys(music_score_editor)
         inputbox_name.send_keys(Keys.ENTER)
 
-        # She is then redirected to the page of the music score she just created
+        # She is then redirected to the page of the music score
+        # she just created
         self.wait_for(lambda: self.assertEqual(
             self.browser.find_element_by_tag_name('h1').text,
             f'{music_score_name} - {music_score_author}'.upper()
@@ -73,10 +84,16 @@ class NewMusicScoreTest(FunctionalTest):
         ))
 
         # And she sees that her new music score now appears on the page
-        music_score = self.browser.find_elements_by_class_name('music_score')[0]
-        score_name = music_score.find_elements_by_class_name('score_name')[0]
+        music_score = (
+            self.browser.find_elements_by_class_name('music_score')[0]
+        )
+        score_name = (
+            music_score.find_elements_by_class_name('score_name')[0]
+        )
         self.assertEqual(score_name.text, f'{music_score_name}')
-        score_author = music_score.find_elements_by_class_name('score_author')[0]
+        score_author = (
+            music_score.find_elements_by_class_name('score_author')[0]
+        )
         self.assertEqual(score_author.text, f'{music_score_author}')
 
     @override_storage(storage=LocMemStorage())
@@ -110,10 +127,16 @@ class NewMusicScoreTest(FunctionalTest):
         ))
 
         # she sees that her previously created music score appears on the page
-        music_score = self.browser.find_elements_by_class_name('music_score')[0]
-        score_name = music_score.find_elements_by_class_name('score_name')[0]
+        music_score = (
+            self.browser.find_elements_by_class_name('music_score')[0]
+        )
+        score_name = (
+            music_score.find_elements_by_class_name('score_name')[0]
+        )
         self.assertEqual(score_name.text, f'{music_score_name}')
-        score_author = music_score.find_elements_by_class_name('score_author')[0]
+        score_author = (
+            music_score.find_elements_by_class_name('score_author')[0]
+        )
         self.assertEqual(score_author.text, f'{music_score_author}')
 
         # She clicks on the music_score and is redirected to the score page
@@ -141,7 +164,10 @@ class NewMusicScoreTest(FunctionalTest):
 
         # She is invited to complete the form
         inputbox_name = self.browser.find_element_by_id('id_name')
-        self.check_for_placeholder_value_of_element(inputbox_name, "Nom de l'instrument")
+        self.check_for_placeholder_value_of_element(
+            inputbox_name,
+            "Nom de l'instrument"
+        )
 
         # She fills the form and hit enter
         instrument_name = 'Hautbois'
@@ -173,7 +199,10 @@ class NewMusicScoreTest(FunctionalTest):
 
         # She is invited to complete the form
         inputbox_name = self.browser.find_element_by_id('id_name')
-        self.check_for_placeholder_value_of_element(inputbox_name, "Nom du pupitre")
+        self.check_for_placeholder_value_of_element(
+            inputbox_name,
+            "Nom du pupitre"
+        )
         inputbox_score = self.browser.find_element_by_id('id_score')
         self.assertEqual(inputbox_score.get_attribute('type'), 'file')
 
@@ -200,7 +229,8 @@ class NewMusicScoreTest(FunctionalTest):
             'Télécharger la partition'
         ))
 
-        # She goes back on music score page and checks the new instrument is there
+        # She goes back on music score page and checks
+        # the new instrument is there
         self.browser.get(score_page)
         instrument = self.browser.find_elements_by_class_name('instrument')[0]
         self.wait_for(lambda: self.assertEqual(

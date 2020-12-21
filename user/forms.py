@@ -12,7 +12,9 @@ from django.contrib.auth.forms import (
 from user.tokens import account_activation_token
 
 EMPTY_EMAIL_ERROR = "Vous ne pouvez pas avoir un champ email vide."
-DUPLICATE_USER_ERROR = "Un utilisateur correspondant à cette adresse email existe déjà."
+DUPLICATE_USER_ERROR = (
+    "Un utilisateur correspondant à cette adresse email existe déjà."
+)
 
 
 class SignupForm(UserCreationForm):
@@ -30,14 +32,20 @@ class SignupForm(UserCreationForm):
         }
     )
 
-    def save(self, request,
-             subject_template_name='registration/activation_request_subject.txt',
-             email_template_name='registration/activation_request_email.html'):
+    def save(
+        self, request,
+        subject_template_name='registration/activation_request_subject.txt',
+        email_template_name='registration/activation_request_email.html'
+    ):
         email = self.cleaned_data['email']
         users = self.get_users(email)
         current_site = get_current_site(request)
         if users.exists() and not users[0].is_active:
-            self.send_confirm_email(users[0], current_site, subject_template_name, email_template_name)
+            self.send_confirm_email(
+                users[0],
+                current_site,
+                subject_template_name,
+                email_template_name)
             return users[0]
         else:
             email = self.cleaned_data.get('email')
@@ -46,7 +54,11 @@ class SignupForm(UserCreationForm):
             # user can't login until link confirmed
             user.is_active = False
             user.save()
-            self.send_confirm_email(user, current_site, subject_template_name, email_template_name)
+            self.send_confirm_email(
+                user,
+                current_site,
+                subject_template_name,
+                email_template_name)
             return user
 
     def clean_email(self):
@@ -63,7 +75,10 @@ class SignupForm(UserCreationForm):
 
     def send_confirm_email(self, user, current_site,
                            subject_template_name, email_template_name):
-        subject = render_to_string(subject_template_name, {'site_name': current_site.name})
+        subject = render_to_string(
+            subject_template_name,
+            {'site_name': current_site.name}
+        )
         message = render_to_string(email_template_name, {
             'user': user,
             'domain': current_site.domain,

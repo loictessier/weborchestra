@@ -54,7 +54,9 @@ class NewScoreViewUnitTest(TestCase):
         response = new_score(self.request)
 
         self.assertEqual(response, mock_redirect.return_value)
-        mock_redirect.assert_called_once_with(str(mock_form.save.return_value.get_absolute_url()))
+        mock_redirect.assert_called_once_with(
+            str(mock_form.save.return_value.get_absolute_url())
+        )
 
     @patch('music_library.views.render')
     def test_renders_new_score_template_with_form_if_form_invalid(
@@ -138,7 +140,9 @@ class NewInstrumentViewUnitTest(TestCase):
         mock_form.is_valid.return_value = True
         response = new_instrument(self.request, self.music_score.id)
         self.assertEqual(response, mock_redirect.return_value)
-        mock_redirect.assert_called_once_with(str(mock_form.save.return_value.get_absolute_url()))
+        mock_redirect.assert_called_once_with(
+            str(mock_form.save.return_value.get_absolute_url())
+        )
 
     @patch('music_library.views.render')
     def test_renders_new_instrument_template_if_form_invalid(
@@ -166,7 +170,9 @@ class InstrumentViewIntegratedTest(TestCase):
     def test_uses_instrument_template(self):
         score = MusicScore.objects.create()
         instrument = Instrument.objects.create(music_score=score)
-        response = self.client.get(f'/music-library/{score.id}/{instrument.id}/')
+        response = self.client.get(
+            f'/music-library/{score.id}/{instrument.id}/'
+        )
         self.assertTemplateUsed(response, 'music_library/instrument.html')
 
     def test_passes_correct_arguments_to_template(self):
@@ -190,7 +196,9 @@ class InstrumentViewIntegratedTest(TestCase):
                 music_score=correct_score
             )
         )
-        response = self.client.get(f'/music-library/{correct_score.id}/{correct_instrument.id}/')
+        response = self.client.get(
+            f'/music-library/{correct_score.id}/{correct_instrument.id}/'
+        )
         self.assertEqual(response.context['score'], correct_score)
         self.assertEqual(response.context['instrument'], correct_instrument)
         self.assertEqual(len(response.context['stands']), 1)
@@ -234,9 +242,15 @@ class NewStandViewUnitTest(TestCase):
     ):
         mock_form = mock_StandForm.return_value
         mock_form.is_valid.return_value = True
-        response = new_stand(self.request, self.music_score.id, self.instrument.id)
+        response = new_stand(
+            self.request,
+            self.music_score.id,
+            self.instrument.id
+        )
         self.assertEqual(response, mock_redirect.return_value)
-        mock_redirect.assert_called_once_with(str(mock_form.save.return_value.get_absolute_url()))
+        mock_redirect.assert_called_once_with(
+            str(mock_form.save.return_value.get_absolute_url())
+        )
 
     @patch('music_library.views.render')
     def test_renders_new_stand_template_if_form_invalid(
@@ -244,7 +258,11 @@ class NewStandViewUnitTest(TestCase):
     ):
         mock_form = mock_StandForm.return_value
         mock_form.is_valid.return_value = False
-        response = new_stand(self.request, self.music_score.id, self.instrument.id)
+        response = new_stand(
+            self.request,
+            self.music_score.id,
+            self.instrument.id
+        )
         self.assertEqual(response, mock_render.return_value)
         mock_render.assert_called_once_with(
             self.request,
@@ -266,7 +284,9 @@ class StandViewIntegratedTest(TestCase):
         score = MusicScore.objects.create()
         instrument = Instrument.objects.create(music_score=score)
         stand = Stand.objects.create(instrument=instrument)
-        response = self.client.get(f'/music-library/{score.id}/{instrument.id}/{stand.id}/')
+        response = self.client.get(
+            f'/music-library/{score.id}/{instrument.id}/{stand.id}/'
+        )
         self.assertTemplateUsed(response, 'music_library/stand.html')
 
     def test_passes_correct_instrument_and_score_to_template(
@@ -285,7 +305,10 @@ class StandViewIntegratedTest(TestCase):
             name='Hautbois1',
             instrument=correct_instrument
         )
-        response = self.client.get(f'/music-library/{correct_score.id}/{correct_instrument.id}/{correct_stand.id}/')
+        response = self.client.get(
+            f'/music-library/{correct_score.id}/'
+            f'{correct_instrument.id}/{correct_stand.id}/'
+        )
         self.assertEqual(response.context['score'], correct_score)
         self.assertEqual(response.context['instrument'], correct_instrument)
         self.assertEqual(response.context['stand'], correct_stand)

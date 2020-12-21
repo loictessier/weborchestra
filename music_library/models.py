@@ -8,7 +8,8 @@ def stand_file_path(instance, filename):
     extension = ''.join(Path(filename).suffixes)
     return (f'partitions/{instance.instrument.music_score.name}/'
             f'{instance.instrument.name}/'
-            f'{instance.instrument.music_score.name}-{instance.name}{extension}')
+            f'{instance.instrument.music_score.name}-'
+            f'{instance.name}{extension}')
 
 
 # Create your models here.
@@ -37,7 +38,10 @@ class Instrument(models.Model):
         ]
 
     def get_absolute_url(self):
-        return reverse('music_library:view_instrument', args=[self.music_score.id, self.id])
+        return reverse(
+            'music_library:view_instrument',
+            args=[self.music_score.id, self.id]
+        )
 
     def __str__(self):
         return f'{self.name}'
@@ -45,7 +49,10 @@ class Instrument(models.Model):
 
 class Stand(models.Model):
     name = models.TextField('Nom', max_length=50)
-    score = models.FileField(verbose_name='Partition', upload_to=stand_file_path)
+    score = models.FileField(
+        verbose_name='Partition',
+        upload_to=stand_file_path
+    )
     instrument = models.ForeignKey('Instrument', on_delete=models.CASCADE)
 
     class Meta:
@@ -57,7 +64,10 @@ class Stand(models.Model):
         ]
 
     def get_absolute_url(self):
-        return reverse('music_library:view_stand', args=[self.instrument.music_score.id, self.instrument.id, self.id])
+        return reverse(
+            'music_library:view_stand',
+            args=[self.instrument.music_score.id, self.instrument.id, self.id]
+        )
 
     def __str__(self):
         return f'{self.name}'
