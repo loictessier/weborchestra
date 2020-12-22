@@ -8,13 +8,18 @@ Provisioning a new site
 * Python 3.8
 * virtualenv + pip
 * Git
-* sentry_sdk
 
 eg, on Ubuntu
 
     sudo apt update
     sudo apt-get install nginx supervisor git python3.8 python3.8-venv
     sudo apt-get install python3-pip
+
+## .env file
+
+* see .env.template
+* copy the file to the root of the project and rename it to .env
+* complete all the value with environment secret values
 
 ## Nginx Virtual Host config
 
@@ -27,8 +32,6 @@ eg, on Ubuntu
 * see gunicorn-supervisor.template.conf
 * replace SITENAME with, e.g., staging.my-domain.com
 * replace USER with server super user
-* replace SETTINGS_NAME with, e.g., staging 
-* fill in all blank environment variables
 
 ## Folder structure
 
