@@ -2,7 +2,6 @@ import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 
 from .base import *
-from .secret_key import SECRET_KEY
 
 
 DEBUG = False
@@ -14,8 +13,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'intairemezzo',
-        'USER': get_env_variable('DB_USER'),
-        'PASSWORD': get_env_variable('DB_PASSWORD'),
+        'USER': get_env_variable('PG_DB_USER'),
+        'PASSWORD': get_env_variable('PG_DB_PASSWORD'),
         'HOST': '',
         'PORT': '5432'
     }

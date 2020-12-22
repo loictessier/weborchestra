@@ -19,10 +19,17 @@ def _deploy(settings_name='default'):
     source_folder = site_folder + '/source'
     _create_directory_structure_if_necessary(site_folder)
     _get_latest_source(source_folder)
-    _update_settings(source_folder, env.host, settings_name)
+    _update_settings(source_folder, settings_name)
     _update_virtualenv(source_folder, settings_name)
-    _update_static_files(source_folder)
-    _update_database(source_folder, settings_name)
+    if exists(source_folder + '/.env'):
+        _update_static_files(source_folder)
+        _update_database(source_folder, settings_name)
+    else:
+        print(
+            'To finish your first deployment complete the'
+            f' {source_folder}/.env.dist file with'
+            ' secret values and rename it to .env'
+        )
 
 
 def _create_directory_structure_if_necessary(site_folder):
@@ -39,12 +46,16 @@ def _get_latest_source(source_folder):
     run(f'cd {source_folder} && git reset --hard {current_commit}')
 
 
-def _update_settings(source_folder):
+def _update_settings(source_folder, settings_name):
+    settings_path = (
+        source_folder + f'/weborchestra/settings/{settings_name}.py'
+    )
     secret_key_file = source_folder + '/weborchestra/settings/secret_key.py'
     if not exists(secret_key_file):
         chars = 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)'
         key = ''.join(random.SystemRandom().choice(chars) for _ in range(50))
         append(secret_key_file, f'SECRET_KEY = "{key}"')
+    run(f"echo '\nfrom .secret_key import SECRET_KEY' >> {settings_path}")
 
 
 def _update_virtualenv(source_folder, settings_name):
