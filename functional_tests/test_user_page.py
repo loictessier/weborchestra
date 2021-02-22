@@ -33,7 +33,7 @@ class UserPageTest(FunctionalTest):
             self.browser.find_element_by_id('id_modify_password'))
         self.wait_for(lambda: self.assertEqual(
             modify_password_button.text,
-            'Modifier le mot de passe'
+            'Modifier le mot de passe'.upper()
         ))
 
         # She can clicks on the modify password button and is redirected to
@@ -63,8 +63,5 @@ class UserPageTest(FunctionalTest):
         inputbox_confirm_password.send_keys(test_password)
         inputbox_confirm_password.send_keys(Keys.ENTER)
 
-        # She is redirected back to her user information page
-        self.wait_for(lambda: self.assertEqual(
-            self.browser.find_element_by_tag_name('h1').text,
-            test_email.upper()
-        ))
+        # She is then logged in
+        self.wait_to_be_logged_in(email=test_email)

@@ -13,6 +13,7 @@
                 <li class="{% if request.resolver_match.url_name == 'music_library' %}active{% endif %}"><a href="{% url 'music_library:music_library' %}">Partothèque</a></li>
                 {% if request.user.is_authenticated %}
                     <li class="{% if request.resolver_match.url_name == 'signout' %}active{% endif %}"><a href="{% url 'user:signout' %}">Se déconnecter</a></li>
+                    <li class="{% if request.resolver_match.url_name == 'informations' %}active{% endif %}"><a href="{% url 'user:informations' %}">{{ request.user.get_username }}</a></li>
                 {% else %}
                     <li class="{% if request.resolver_match.url_name == 'signin' %}active{% endif %}"><a href="{% url 'user:signin' %}">Se connecter</a></li>
                     <li class="{% if request.resolver_match.url_name == 'signup' %}active{% endif %}"><a href="{% url 'user:signup' %}">S'inscrire</a></li>

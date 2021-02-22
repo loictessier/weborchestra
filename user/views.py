@@ -4,8 +4,8 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.views import PasswordResetConfirmView
-from django.utils.http import urlsafe_base64_decode
-from django.utils.encoding import force_str
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+from django.utils.encoding import force_str, force_bytes
 from django.urls import reverse_lazy
 
 from user.forms import (
@@ -101,3 +101,12 @@ class PasswordResetConfirm(PasswordResetConfirmView):
     post_reset_login = True
     success_url = reverse_lazy('user:password_reset_complete')
     token_generator = account_activation_token
+
+
+def informations(request):
+    uid = urlsafe_base64_encode(force_bytes(request.user.pk))
+    token = account_activation_token.make_token(request.user)
+    return render(
+        request,
+        'user/informations.html',
+        {'user_uid': uid, 'user_token': token})

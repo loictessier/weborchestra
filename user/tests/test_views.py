@@ -10,7 +10,7 @@ from django.http import HttpRequest
 from unittest.mock import patch
 
 from user.models import Profile
-from user.views import password_reset, signup
+from user.views import password_reset, signup, informations
 from user.forms import (
     SignupForm, SigninForm, PasswordResetForm,
     EMPTY_EMAIL_ERROR
@@ -270,4 +270,36 @@ class PasswordResetViewUnitTest(TestCase):
             self.request,
             'registration/password_reset_form.html',
             {'form': mock_form}
+        )
+
+
+class InformationsViewUnitTest(TestCase):
+
+    def setUp(self):
+        self.request = HttpRequest()
+        self.new_user = User.objects.create_user(
+            'django@test.test',
+            'django@test.test',
+            'Django4321'
+        )
+        self.new_user.is_active = True
+        self.new_user.profile.signup_confirmation = True
+        self.new_user.save()
+        self.request.user = self.new_user
+
+    @patch('user.views.render')
+    def test_returns_render_with_args(
+        self, mock_render
+    ):
+        response = informations(self.request)
+        self.assertEqual(response, mock_render.return_value)
+        mock_render.assert_called_once_with(
+            self.request,
+            'user/informations.html',
+            {
+                'user_uid':
+                    urlsafe_base64_encode(force_bytes(self.new_user.pk)),
+                'user_token':
+                    account_activation_token.make_token(self.new_user)
+            }
         )
