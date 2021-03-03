@@ -1,5 +1,4 @@
 from django.test import TestCase
-from django.contrib.auth.models import User
 
 from model_bakery import baker
 
@@ -9,8 +8,8 @@ from user.models import Profile
 class ProfileTest(TestCase):
 
     def test_saving_and_retrieving_profiles(self):
-        first_user = baker.make(User)
-        baker.make(User)    # second user
+        first_user = baker.make(Profile)
+        baker.make(Profile)    # second user
 
         saved_profiles = Profile.objects.all()
         self.assertEqual(saved_profiles.count(), 2)
@@ -20,7 +19,6 @@ class ProfileTest(TestCase):
         self.assertEqual(first_user.username, first_saved_profile.__str__())
 
     def test_new_profile_set_signup_confirmation_to_false(self):
-        new_user = baker.make(User)
-        new_profile = new_user.profile
+        new_profile = baker.make(Profile)
 
         self.assertFalse(new_profile.signup_confirmation, False)

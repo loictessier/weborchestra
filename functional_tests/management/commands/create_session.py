@@ -30,7 +30,7 @@ def create_pre_authenticated_session(email, password):
         password=password
     )
     user.is_active = True
-    user.profile.signup_confirmation = True
+    user.signup_confirmation = True
     user.save()
     engine = import_module(settings.SESSION_ENGINE)
     session = engine.SessionStore()

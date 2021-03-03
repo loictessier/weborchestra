@@ -21,5 +21,5 @@ def create_activated_account(email, password):
         password=password
     )
     user.is_active = True
-    user.profile.signup_confirmation = True
+    user.signup_confirmation = True
     user.save()

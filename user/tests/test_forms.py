@@ -1,5 +1,4 @@
 from django.test import TestCase
-from django.contrib.auth.models import User
 from django.core import mail
 from django.http import HttpRequest
 
@@ -51,7 +50,7 @@ class SignupFormTest(TestCase):
 
     def test_form_validation_for_duplicate_active_user(self):
         self.user1 = baker.make(
-            User,
+            Profile,
             username='test@test.test',
             email='test@test.test',
             is_active=True,
@@ -66,7 +65,7 @@ class SignupFormTest(TestCase):
 
     def test_form_validation_for_duplicate_inactive_user(self):
         self.user1 = baker.make(
-            User,
+            Profile,
             username='test@test.test',
             email='test@test.test',
             is_active=False,
@@ -88,11 +87,10 @@ class SignupFormTest(TestCase):
         })
         self.assertTrue(form.is_valid())
         form.save(self.request)
-        self.assertEqual(User.objects.count(), 1)
         self.assertEqual(Profile.objects.count(), 1)
         new_profile = Profile.objects.first()
-        self.assertEqual(new_profile.user.email, 'example@email.test')
-        self.assertFalse(new_profile.user.is_active)
+        self.assertEqual(new_profile.email, 'example@email.test')
+        self.assertFalse(new_profile.is_active)
 
     @patch('user.forms.get_current_site')
     def test_valid_form_send_mail(self, mock_get_current_site):

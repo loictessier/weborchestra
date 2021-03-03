@@ -1,4 +1,3 @@
-from django.contrib.auth.models import User
 from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_encode
@@ -10,6 +9,7 @@ from django.contrib.auth.forms import (
 )
 
 from user.tokens import account_activation_token
+from user.models import Profile
 
 EMPTY_EMAIL_ERROR = "Vous ne pouvez pas avoir un champ email vide."
 DUPLICATE_USER_ERROR = (
@@ -50,7 +50,7 @@ class SignupForm(UserCreationForm):
         else:
             email = self.cleaned_data.get('email')
             password = self.cleaned_data.get('password1')
-            user = User.objects.create_user(email, email, password)
+            user = Profile.objects.create_user(email, email, password)
             # user can't login until link confirmed
             user.is_active = False
             user.save()
@@ -71,7 +71,8 @@ class SignupForm(UserCreationForm):
         return email
 
     def get_users(self, email):
-        return User.objects.exclude(pk=self.instance.pk).filter(username=email)
+        return Profile.objects.exclude(
+            pk=self.instance.pk).filter(username=email)
 
     def send_confirm_email(self, user, current_site,
                            subject_template_name, email_template_name):
@@ -94,7 +95,7 @@ class SignupForm(UserCreationForm):
         self.error_messages['email_duplicate'] = DUPLICATE_USER_ERROR
 
     class Meta:
-        model = User
+        model = Profile
         fields = ('email', 'password1', 'password2')
 
 
@@ -120,7 +121,7 @@ class SigninForm(AuthenticationForm):
         self.fields['password'].widget.attrs['placeholder'] = '********'
 
     class Meta:
-        model = User
+        model = Profile
         fields = ('email', 'password')
 
 
