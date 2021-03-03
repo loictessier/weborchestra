@@ -2,7 +2,6 @@ from django.test import TestCase
 from django.utils.html import escape
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
-from django.contrib.auth.models import User
 from django.core import mail
 from django.urls import reverse
 from django.http import HttpRequest
@@ -107,7 +106,7 @@ class ActivateTest(TestCase):
             'email': 'example@email.test',
             'password': 'Django4521'
         }
-        self.new_user = User.objects.create_user(
+        self.new_user = Profile.objects.create_user(
             self.new_user_data['email'],
             self.new_user_data['email'],
             self.new_user_data['password']
@@ -133,23 +132,23 @@ class ActivateTest(TestCase):
             'uidb64': self.new_user_data['uid'],
             'token': self.new_user_data['token']
         }))
-        my_user = User.objects.get(pk=self.new_user.pk)
+        my_user = Profile.objects.get(pk=self.new_user.pk)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response['location'], '/')
         self.assertTrue(my_user.is_active)
-        self.assertTrue(my_user.profile.signup_confirmation)
+        self.assertTrue(my_user.signup_confirmation)
 
 
 class SigninTest(TestCase):
 
     def setUp(self):
-        self.new_user = User.objects.create_user(
+        self.new_user = Profile.objects.create_user(
             'django@test.test',
             'django@test.test',
             'Django4321'
         )
         self.new_user.is_active = True
-        self.new_user.profile.signup_confirmation = True
+        self.new_user.signup_confirmation = True
         self.new_user.save()
 
     def test_uses_signin_template(self):
@@ -193,13 +192,13 @@ class SignoutTest(TestCase):
 class PasswordResetViewIntegratedTest(TestCase):
 
     def setUp(self):
-        self.new_user = User.objects.create_user(
+        self.new_user = Profile.objects.create_user(
             'edith@example.com',
             'edith@example.com',
             'Django4321'
         )
         self.new_user.is_active = True
-        self.new_user.profile.signup_confirmation = True
+        self.new_user.signup_confirmation = True
         self.new_user.save()
 
     def test_uses_password_reset_form(self):
@@ -277,13 +276,13 @@ class InformationsViewUnitTest(TestCase):
 
     def setUp(self):
         self.request = HttpRequest()
-        self.new_user = User.objects.create_user(
+        self.new_user = Profile.objects.create_user(
             'django@test.test',
             'django@test.test',
             'Django4321'
         )
         self.new_user.is_active = True
-        self.new_user.profile.signup_confirmation = True
+        self.new_user.signup_confirmation = True
         self.new_user.save()
         self.request.user = self.new_user
 
