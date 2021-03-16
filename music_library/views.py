@@ -1,7 +1,15 @@
 from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import user_passes_test, login_required
 
 from music_library.forms import ScoreForm, InstrumentForm, StandForm
 from music_library.models import MusicScore, Instrument, Stand
+from user.models import Role
+
+
+# custom decorator for role required
+def role_required(*roles, login_url='/'):
+    return user_passes_test(
+        lambda u: u.has_any_role(roles), login_url=login_url)
 
 
 def music_library(request):
@@ -12,6 +20,11 @@ def music_library(request):
         {'music_scores': music_scores})
 
 
+# Test of decorators
+@login_required(login_url='/auth/signin')
+@role_required(Role.ADMIN,
+               Role.MUSIC_LIBRARY_MODERATOR,
+               login_url='/music-library')
 def new_score(request):
     form = ScoreForm(data=request.POST)
     if form.is_valid():
