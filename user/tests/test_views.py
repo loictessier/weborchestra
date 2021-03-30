@@ -299,6 +299,7 @@ class InformationsViewUnitTest(TestCase):
                 'user_uid':
                     urlsafe_base64_encode(force_bytes(self.new_user.pk)),
                 'user_token':
-                    account_activation_token.make_token(self.new_user)
+                    account_activation_token.make_token(self.new_user),
+                'roles': list(self.new_user.roles.all())
             }
         )

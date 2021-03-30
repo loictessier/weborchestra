@@ -106,7 +106,8 @@ class PasswordResetConfirm(PasswordResetConfirmView):
 def informations(request):
     uid = urlsafe_base64_encode(force_bytes(request.user.pk))
     token = account_activation_token.make_token(request.user)
+    roles = request.user.roles.all()
     return render(
         request,
         'user/informations.html',
-        {'user_uid': uid, 'user_token': token})
+        {'user_uid': uid, 'user_token': token, 'roles': list(roles)})
