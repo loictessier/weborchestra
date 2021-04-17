@@ -1,9 +1,17 @@
 from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
 
 from music_library.forms import ScoreForm, InstrumentForm, StandForm
 from music_library.models import MusicScore, Instrument, Stand
+from user.models import Role
+from user.decorators import role_required
 
 
+@login_required(login_url='/auth/signin')
+@role_required(Role.ADMIN,
+               Role.MUSIC_LIBRARY_MODERATOR,
+               Role.MUSICIAN,
+               login_url='/')
 def music_library(request):
     music_scores = MusicScore.objects.all()
     return render(
@@ -12,6 +20,10 @@ def music_library(request):
         {'music_scores': music_scores})
 
 
+@login_required(login_url='/auth/signin')
+@role_required(Role.ADMIN,
+               Role.MUSIC_LIBRARY_MODERATOR,
+               login_url='/')
 def new_score(request):
     form = ScoreForm(data=request.POST)
     if form.is_valid():
@@ -20,6 +32,11 @@ def new_score(request):
     return render(request, 'music_library/new_score.html', {'form': form})
 
 
+@login_required(login_url='/auth/signin')
+@role_required(Role.ADMIN,
+               Role.MUSIC_LIBRARY_MODERATOR,
+               Role.MUSICIAN,
+               login_url='/')
 def view_score(request, score_id):
     score = MusicScore.objects.get(id=score_id)
     instruments = Instrument.objects.filter(music_score=score)
@@ -29,6 +46,10 @@ def view_score(request, score_id):
         {'score': score, 'instruments': instruments})
 
 
+@login_required(login_url='/auth/signin')
+@role_required(Role.ADMIN,
+               Role.MUSIC_LIBRARY_MODERATOR,
+               login_url='/')
 def new_instrument(request, score_id):
     music_score = MusicScore.objects.get(id=score_id)
     form = InstrumentForm(music_score=music_score, data=request.POST)
@@ -41,6 +62,11 @@ def new_instrument(request, score_id):
         {'form': form})
 
 
+@login_required(login_url='/auth/signin')
+@role_required(Role.ADMIN,
+               Role.MUSIC_LIBRARY_MODERATOR,
+               Role.MUSICIAN,
+               login_url='/')
 def view_instrument(request, score_id, instrument_id):
     score = MusicScore.objects.get(id=score_id)
     instrument = Instrument.objects.get(id=instrument_id)
@@ -50,6 +76,10 @@ def view_instrument(request, score_id, instrument_id):
                   {'score': score, 'instrument': instrument, 'stands': stands})
 
 
+@login_required(login_url='/auth/signin')
+@role_required(Role.ADMIN,
+               Role.MUSIC_LIBRARY_MODERATOR,
+               login_url='/')
 def new_stand(request, score_id, instrument_id):
     instrument = Instrument.objects.get(id=instrument_id)
     form = StandForm(
@@ -63,6 +93,11 @@ def new_stand(request, score_id, instrument_id):
     return render(request, 'music_library/new_stand.html', {'form': form})
 
 
+@login_required(login_url='/auth/signin')
+@role_required(Role.ADMIN,
+               Role.MUSIC_LIBRARY_MODERATOR,
+               Role.MUSICIAN,
+               login_url='/')
 def view_stand(request, score_id, instrument_id, stand_id):
     score = MusicScore.objects.get(id=score_id)
     instrument = Instrument.objects.get(id=instrument_id)

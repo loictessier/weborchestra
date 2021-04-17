@@ -6,14 +6,16 @@
 {% block content %}
     <section class="box-content">
         <div class="container">
-            <div class="row">
-                <form class="col-lg-2 col-md-offset-9">
-                    <button id="id_new_stand_button"
-                            class="btn" 
-                            formaction="{% url 'music_library:new_stand' score_id=score.id instrument_id=instrument.id %}">
-                        Ajouter un pupitre
-                </form>
-            </div>
+            {% if request.user.is_administrateur or request.user.is_music_library_moderator %}
+                <div class="row">
+                    <form class="col-lg-2 col-md-offset-9">
+                        <button id="id_new_stand_button"
+                                class="btn" 
+                                formaction="{% url 'music_library:new_stand' score_id=score.id instrument_id=instrument.id %}">
+                            Ajouter un pupitre
+                    </form>
+                </div>
+            {% endif %}
             <div class="row" style="padding-top: 4em;">
                 {% if stands %}
                     {% for stand in stands %}

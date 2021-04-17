@@ -10,8 +10,10 @@
         <div class="collapse navbar-collapse navbar-ex1-collapse">
             <ul class="nav navbar-nav">
                 <li class="{% if request.resolver_match.url_name == 'index' %}active{% endif %}"><a href="{% url 'core:index' %}">Accueil</a></li>
-                <li class="{% if request.resolver_match.url_name == 'music_library' %}active{% endif %}"><a href="{% url 'music_library:music_library' %}">Partothèque</a></li>
                 {% if request.user.is_authenticated %}
+                    {% if request.user.is_admin or request.user.is_music_library_moderator or request.user.is_musician %}
+                        <li class="{% if request.resolver_match.url_name == 'music_library' %}active{% endif %}"><a href="{% url 'music_library:music_library' %}">Partothèque</a></li>
+                    {% endif %}
                     {% if request.user.is_admin %}
                         <li class="{% if request.resolver_match.url_name == 'admin' %}active{% endif %}"><a href="{% url 'user:admin' %}">Administration</a></li>
                     {% endif %}

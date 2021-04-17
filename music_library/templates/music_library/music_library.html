@@ -5,15 +5,17 @@
 {% block content %}
     <section class="box-content">
         <div class="container">
-            <div class="row">
-                <form class="col-lg-2 col-md-offset-9">
-                    <button id="id_new_score_button" 
-                            class="btn" 
-                            formaction="{% url 'music_library:new_score' %}">
-                        Ajouter une partition
-                    </button>
-                </form>
-            </div>
+            {% if request.user.is_administrateur or request.user.is_music_library_moderator %}
+                <div class="row">
+                    <form class="col-lg-2 col-md-offset-9">
+                        <button id="id_new_score_button" 
+                                class="btn" 
+                                formaction="{% url 'music_library:new_score' %}">
+                            Ajouter une partition
+                        </button>
+                    </form>
+                </div>
+            {% endif %}
             <div class="row" style="padding-top: 4em">
                 {% if music_scores %}
                     {% for score in music_scores %}
