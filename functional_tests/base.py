@@ -76,15 +76,17 @@ class FunctionalTest(StaticLiveServerTestCase):
             placeholder_value
         )
 
-    def create_pre_authenticated_session(self, email, password):
+    def create_pre_authenticated_session(self, email, password, roles=[]):
         if self.staging_server:
             session_key = create_session_on_server(
                 self.staging_server,
                 email,
-                password
+                password,
+                roles
             )
         else:
-            session_key = create_pre_authenticated_session(email, password)
+            session_key = create_pre_authenticated_session(
+                email, password, roles)
         # to set a cookie we need to first visit the domain.
         # 404 pages load the quickest
         self.browser.get(self.live_server_url + "/404_no_such_url/")
@@ -94,16 +96,18 @@ class FunctionalTest(StaticLiveServerTestCase):
             path='/',
         ))
 
-    def create_activated_account(self, email, password):
+    def create_activated_account(self, email, password, roles=[]):
         if self.staging_server:
             create_activated_account_on_server(
                 self.staging_server,
                 email,
-                password
+                password,
+                roles
             )
         else:
-            create_activated_account(email, password)
+            create_activated_account(email, password, roles)
 
+    @wait
     def wait_for_email(self, test_email, subject):
         email = mail.outbox[0]
         self.assertIn(test_email, email.to)
@@ -116,3 +120,9 @@ class FunctionalTest(StaticLiveServerTestCase):
             author=author,
             editor=editor
         )
+
+    def get_element_in_list_by_text(self, text, elements):
+        for el in elements:
+            if text in el.text:
+                return el
+        return False

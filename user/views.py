@@ -9,7 +9,8 @@ from django.urls import reverse_lazy
 
 from user.forms import (
     SignupForm, SigninForm,
-    PasswordResetForm, SetPasswordForm
+    PasswordResetForm, SetPasswordForm,
+    EditUserForm
 )
 from user.tokens import account_activation_token
 from user.models import Profile
@@ -111,3 +112,23 @@ def informations(request):
         request,
         'user/informations.html',
         {'user_uid': uid, 'user_token': token, 'roles': list(roles)})
+
+
+def admin(request):
+    users = Profile.objects.all()
+    return render(request, 'admin/admin.html', {'users': list(users)})
+
+
+def edit_user(request, id):
+    user = Profile.objects.get(id=id)
+    if request.method == 'POST':
+        form = EditUserForm(data=request.POST, instance=user)
+        if form.is_valid():
+            form.save(user=user)
+            return redirect('/auth/admin')
+    else:
+        form = EditUserForm(instance=user)
+    return render(
+        request,
+        'admin/edit-user.html',
+        {'user': user, 'form': form})

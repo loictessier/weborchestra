@@ -18,15 +18,17 @@ def reset_database(host):
         run(f'{manage_dot_py} flush --noinput')
 
 
-def create_session_on_server(host, email, password):
+def create_session_on_server(host, email, password, roles=[]):
     manage_dot_py = _get_manage_dot_py(host)
     with settings(host_string=f'{super_user}@{host}'):
-        session_key = run(f'{manage_dot_py} create_session {email} {password}')
+        session_key = run(
+            f'{manage_dot_py} create_session {email} {password} {roles}')
         return session_key.strip()
 
 
-def create_activated_account_on_server(host, email, password):
+def create_activated_account_on_server(host, email, password, roles=[]):
     manage_dot_py = _get_manage_dot_py(host)
     with settings(host_string=f'{super_user}@{host}'):
-        user = run(f'{manage_dot_py} create_account {email} {password}')
+        user = run(
+            f'{manage_dot_py} create_account {email} {password} {roles}')
         return user

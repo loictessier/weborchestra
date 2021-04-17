@@ -9,7 +9,10 @@ from django.http import HttpRequest
 from unittest.mock import patch
 
 from user.models import Profile
-from user.views import password_reset, signup, informations
+from user.views import (
+    password_reset, signup, informations,
+    admin, edit_user
+)
 from user.forms import (
     SignupForm, SigninForm, PasswordResetForm,
     EMPTY_EMAIL_ERROR
@@ -302,4 +305,99 @@ class InformationsViewUnitTest(TestCase):
                     account_activation_token.make_token(self.new_user),
                 'roles': list(self.new_user.roles.all())
             }
+        )
+
+
+class AdminViewIntegratedTest(TestCase):
+
+    def setUp(self):
+        self.new_user = Profile.objects.create_user(
+            'edith@example.com',
+            'edith@example.com',
+            'Django4321'
+        )
+        self.new_user.is_active = True
+        self.new_user.signup_confirmation = True
+        self.new_user.save()
+        self.request = HttpRequest()
+
+    def test_uses_admin_template(self):
+        response = self.client.get('/auth/admin')
+        self.assertTemplateUsed(response, 'admin/admin.html')
+
+    @patch('user.views.render')
+    def test_returns_render_with_args(
+        self, mock_render
+    ):
+        response = admin(self.request)
+        self.assertEqual(response, mock_render.return_value)
+        mock_render.assert_called_once_with(
+            self.request,
+            'admin/admin.html',
+            {
+                'users': list(Profile.objects.all())
+            }
+        )
+
+
+@patch('user.views.EditUserForm')
+class EditUserUnitTest(TestCase):
+
+    def setUp(self):
+        self.new_user = Profile.objects.create_user(
+            'edith@example.com',
+            'edith@example.com',
+            'Django4321'
+        )
+        self.new_user.is_active = True
+        self.new_user.signup_confirmation = True
+        self.new_user.save()
+        self.request = HttpRequest()
+        self.request.POST['email'] = 'edith-new-email@example.com'
+        self.request.POST['roles'] = [2, 7]
+
+    def test_call_form_save_if_form_valid(self, mockEditUserForm):
+        self.request.method = 'POST'
+        mock_form = mockEditUserForm.return_value
+        mock_form.is_valid.return_value = True
+        edit_user(self.request, self.new_user.id)
+        mock_form.save.assert_called_once()
+
+    def test_passes_POST_data_to_EditUserForm(
+        self, mockEditUserForm
+    ):
+        self.request.method = 'POST'
+        edit_user(self.request, self.new_user.id)
+        mockEditUserForm.assert_called_once_with(
+            data=self.request.POST,
+            instance=self.new_user
+        )
+
+    @patch('user.views.redirect')
+    def test_redirect_to_admin_if_form_valid(
+        self, mock_redirect, mockEditUserForm
+    ):
+        self.request.method = 'POST'
+        mock_form = mockEditUserForm.return_value
+        mock_form.is_valid.return_value = True
+
+        response = edit_user(self.request, self.new_user.id)
+
+        self.assertEqual(response, mock_redirect.return_value)
+        mock_redirect.assert_called_once_with('/auth/admin')
+
+    @patch('user.views.render')
+    def test_renders_password_reset_with_form_if_form_invalid(
+        self, mock_render, mockEditUserForm
+    ):
+        mock_form = mockEditUserForm.return_value
+        mock_form.is_valid.return_value = False
+
+        response = edit_user(self.request, self.new_user.id)
+
+        self.assertEqual(response, mock_render.return_value)
+        mock_render.assert_called_once_with(
+            self.request,
+            'admin/edit-user.html',
+            {'user': self.new_user, 'form': mock_form}
         )

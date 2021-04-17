@@ -6,6 +6,8 @@ from django.contrib.auth import (
 )
 from django.conf import settings
 
+from user.models import Role
+
 User = get_user_model()
 
 
@@ -23,7 +25,7 @@ class Command(BaseCommand):
         self.stdout.write(session_key)
 
 
-def create_pre_authenticated_session(email, password):
+def create_pre_authenticated_session(email, password, roles=[]):
     user = User.objects.create_user(
         email=email,
         username=email,
@@ -31,6 +33,8 @@ def create_pre_authenticated_session(email, password):
     )
     user.is_active = True
     user.signup_confirmation = True
+    for role in roles:
+        user.roles.add(Role.objects.get(id=role))
     user.save()
     engine = import_module(settings.SESSION_ENGINE)
     session = engine.SessionStore()

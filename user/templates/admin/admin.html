@@ -1,0 +1,50 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block title %} Int'Aire'Mezzo | Administration{% endblock %}
+{% block page-title %}Administration{% endblock %}
+
+{% block top_scripts %}
+    {{ block.super }}
+    <link href="{% static 'user/css/role.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<section class="box-content">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <table class="table">
+                    <thead>
+                      <tr>
+                        <th scope="col">Email</th>
+                        <th scope="col">Roles</th>
+                        <th scope="col">Actif</th>
+                        <th scope="col"></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                        {% for u in users %}
+                            <tr class='user'>
+                                <td class="col-md-3">{{ u.email }}</td>
+                                <td class="col-md-9">
+                                    <ul class="list-inline form-control-static">
+                                        {% for role in u.roles.all %}
+                                            <li class="role">
+                                                {{ role }}
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                </td>
+                                <td class="col-md-3">{{ u.is_active|yesno:'Oui,Non,Non' }}</td>
+                                <td>
+                                    <a href="{% url 'user:edit_user' id=u.id %}">Modifier</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                  </table>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock content %}

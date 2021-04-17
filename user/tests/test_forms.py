@@ -6,10 +6,11 @@ from model_bakery import baker
 from unittest.mock import patch
 
 from user.forms import (
-    SignupForm, SigninForm, PasswordResetForm, SetPasswordForm,
+    SignupForm, SigninForm, PasswordResetForm,
+    SetPasswordForm, EditUserForm,
     EMPTY_EMAIL_ERROR, DUPLICATE_USER_ERROR
 )
-from user.models import Profile
+from user.models import Profile, Role
 
 
 class SignupFormTest(TestCase):
@@ -137,3 +138,49 @@ class SetPasswordFormTest(TestCase):
         self.assertIn('placeholder="********"', form.as_p())
         self.assertIn('id="id_new_password1"', form.as_p())
         self.assertIn('id="id_new_password2"', form.as_p())
+
+
+class EditUserFormTest(TestCase):
+
+    def setUp(self):
+        self.user = Profile.objects.create_user(
+            username='toto@test.com',
+            email='toto@test.com',
+            password='Test1234'
+        )
+        self.user.roles.add(Role.objects.get(id=1))
+        self.user.is_active = True
+        self.user.save()
+
+    def test_form_renders_email_input(self):
+        form = EditUserForm(instance=self.user)
+        self.assertIn('value="toto@test.com"', form.as_p())
+        self.assertIn('type="email"', form.as_p())
+
+    def test_form_renders_roles_input(self):
+        form = EditUserForm(instance=self.user)
+        self.assertIn('id="id_roles_0" checked', form.as_p())
+
+    def test_change_email(self):
+        form = EditUserForm(
+            data={'email': 'titi@test.com', 'roles': [2]},
+            instance=self.user
+        )
+        if form.is_valid():
+            form.save(self.user)
+        self.assertEqual(self.user.email, 'titi@test.com')
+        self.assertEqual(self.user.username, 'titi@test.com')
+        self.assertEqual(self.user.roles.count(), 1)
+        self.assertEqual(self.user.roles.first().id, 2)
+
+    def test_add_role(self):
+        form = EditUserForm(
+            data={'email': 'toto@test.com', 'roles': [2, 7]},
+            instance=self.user
+        )
+        if form.is_valid():
+            form.save(self.user)
+        self.assertEqual(self.user.email, 'toto@test.com')
+        self.assertEqual(self.user.roles.count(), 2)
+        self.assertIn(Role.objects.get(id=2), self.user.roles.all())
+        self.assertIn(Role.objects.get(id=7), self.user.roles.all())

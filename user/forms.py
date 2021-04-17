@@ -9,7 +9,7 @@ from django.contrib.auth.forms import (
 )
 
 from user.tokens import account_activation_token
-from user.models import Profile
+from user.models import Profile, Role
 
 EMPTY_EMAIL_ERROR = "Vous ne pouvez pas avoir un champ email vide."
 DUPLICATE_USER_ERROR = (
@@ -146,3 +146,21 @@ class SetPasswordForm(SetPasswordForm):
         super(SetPasswordForm, self).__init__(user, *args, **kwargs)
         self.fields['new_password1'].widget.attrs['placeholder'] = '********'
         self.fields['new_password2'].widget.attrs['placeholder'] = '********'
+
+
+class EditUserForm(forms.ModelForm):
+    email = forms.EmailField(max_length=200)
+    roles = forms.ModelMultipleChoiceField(
+        queryset=Role.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+        required=False
+    )
+
+    def save(self, user):
+        super().save()
+        user.username = self.cleaned_data['email']
+        user.save()
+
+    class Meta:
+        model = Profile
+        fields = ('email', 'roles')
