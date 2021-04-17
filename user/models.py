@@ -30,7 +30,7 @@ class Role(models.Model):
 
 class Profile(AbstractUser):
     signup_confirmation = models.BooleanField(default=False)
-    roles = models.ManyToManyField(Role)
+    roles = models.ManyToManyField(Role, verbose_name='rôle')
 
     def has_any_role(self, *roles):
         return any(r in roles for r in [r.id for r in self.roles.all()])

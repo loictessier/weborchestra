@@ -149,8 +149,9 @@ class SetPasswordForm(SetPasswordForm):
 
 
 class EditUserForm(forms.ModelForm):
-    email = forms.EmailField(max_length=200)
+    email = forms.EmailField(label='Adresse mail', max_length=200)
     roles = forms.ModelMultipleChoiceField(
+        label='Rôles',
         queryset=Role.objects.all(),
         widget=forms.CheckboxSelectMultiple,
         required=False
