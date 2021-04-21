@@ -2,18 +2,19 @@
     <div class="row">
         <div class="col-md-7">
             <div class="footer-contact-form">
-                <h2 class="footer-title">Leave A Message</h2>
-                <form name="" method="post" action="contact.php">
+                <h2 class="footer-title">Contactez-nous</h2>
+                <form method="post" action="{% url 'core:contact' %}">
+                    {% csrf_token %}
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <input type="text" class="form-control input-lg" name="name" id="name" placeholder="Enter name" required="required" />
+                                <input type="text" class="form-control input-lg" name="name" id="name" placeholder="Votre nom" required="required" />
                             </div>
                             <div class="form-group">
-                                <input type="email" class="form-control input-lg" name="email" id="email" placeholder="Enter email" required="required" />
+                                <input type="email" class="form-control input-lg" name="email" id="email" placeholder="Votre email" required="required" />
                             </div>
                             <div class="form-group">
-                                <input type="text" class="form-control input-lg" name="subject" id="subject" placeholder="Subject" required="required" />
+                                <input type="text" class="form-control input-lg" name="subject" id="subject" placeholder="Objet du message" required="required" />
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -22,7 +23,7 @@
                             </div>						
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-skin" name="submitcontact" id="submitcontact">Submit</button>
+                    <button type="submit" class="btn btn-skin" name="submitcontact" id="submitcontact">Envoyer</button>
                 </form>
             </div>
         </div>
@@ -36,8 +37,8 @@
                             </div>
                         </div>
                         <div class="col-md-10">
-                            <h3>Location</h3>
-                            <p>California, United States 3000009</p>
+                            <h3>Adresse</h3>
+                            <p>Association Int'Aire'Mezzo<br> 45 Rue Félix Despagnet<br> 40800 Aire-sur-l'Adour, France</p>
                         </div>
                     </div>
                 </div>
@@ -49,8 +50,8 @@
                             </div>
                         </div>
                         <div class="col-md-10">
-                            <h3>Toll Free call</h3>
-                            <p> +6221 888 888 90 , +6221 888 88891</p>
+                            <h3>Contact</h3>
+                            <p>06 78 79 70 55</p>
                         </div>
                     </div>
                 </div>
@@ -63,7 +64,7 @@
                         </div>
                         <div class="col-md-10">
                             <h3>Email</h3>
-                            <p> info@yourdomain.com</p>
+                            <p>intairemezzo@hotmail.com</p>
                         </div>
                     </div>
                 </div>
