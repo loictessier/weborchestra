@@ -13,7 +13,11 @@ class NewMusicScoreTest(FunctionalTest):
         # Edith is connected to her activated account
         test_email = 'edith.usertest@yahoo.com'
         test_password = 'Python4521'
-        self.create_pre_authenticated_session(test_email, test_password)
+        self.create_pre_authenticated_session(
+            test_email,
+            test_password,
+            roles=[2]
+        )
 
         # Edith checks out home page and sees she is logged in
         self.browser.get(self.live_server_url)
@@ -101,7 +105,11 @@ class NewMusicScoreTest(FunctionalTest):
         # Edith is connected to her activated account
         test_email = 'edith.usertest@yahoo.com'
         test_password = 'Python4521'
-        self.create_pre_authenticated_session(test_email, test_password)
+        self.create_pre_authenticated_session(
+            test_email,
+            test_password,
+            roles=[2]
+        )
 
         # She wants to add an instrument to a music
         # score she previously created

@@ -34,7 +34,8 @@ def create_pre_authenticated_session(email, password, roles=[]):
     user.is_active = True
     user.signup_confirmation = True
     for role in roles:
-        user.roles.add(Role.objects.get(id=role))
+        role = Role.objects.get_or_create(id=role)
+        user.roles.add(role[0])
     user.save()
     engine = import_module(settings.SESSION_ENGINE)
     session = engine.SessionStore()

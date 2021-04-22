@@ -6,7 +6,7 @@
 {% block content %}
     <section class="box-content">
         <div class="container">
-            {% if request.user.is_administrateur or request.user.is_music_library_moderator %}
+            {% if request.user.is_admin or request.user.is_music_library_moderator %}
                 <div class="row">
                     <form class="col-lg-2 col-md-offset-9">
                         <button id="id_new_instrument_button"

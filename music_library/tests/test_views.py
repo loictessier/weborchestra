@@ -5,9 +5,27 @@ from django.http import HttpRequest
 
 from music_library.views import new_score, new_instrument, new_stand
 from music_library.models import MusicScore, Instrument, Stand
+from user.models import Profile, Role
+
+
+def create_user_with_roles(roles):
+    new_user = Profile.objects.create_user(
+        'edith@example.com',
+        'edith@example.com',
+        'Django4321'
+    )
+    new_user.is_active = True
+    new_user.signup_confirmation = True
+    new_user.save()
+    new_user.roles.add(roles)
+    return new_user
 
 
 class MusicLibraryViewIntegratedTest(TestCase):
+
+    def setUp(self):
+        self.new_user = create_user_with_roles(Role.MUSIC_LIBRARY_MODERATOR)
+        self.client.force_login(self.new_user)
 
     def test_uses_music_library_template(self):
         response = self.client.get('/music-library/')
@@ -33,6 +51,9 @@ class NewScoreViewUnitTest(TestCase):
         self.request.POST['name'] = 'T-Bones In Swing'
         self.request.POST['author'] = 'George Gershwin'
         self.request.POST['editor'] = 'Molenaar Edition'
+        self.request.user = create_user_with_roles(
+            Role.MUSIC_LIBRARY_MODERATOR
+        )
 
     def test_passes_POST_data_to_ScoreForm(self, mock_ScoreForm):
         new_score(self.request)
@@ -81,6 +102,10 @@ class NewScoreViewUnitTest(TestCase):
 
 class ScoreViewIntegratedTest(TestCase):
 
+    def setUp(self):
+        self.new_user = create_user_with_roles(Role.MUSIC_LIBRARY_MODERATOR)
+        self.client.force_login(self.new_user)
+
     def test_uses_score_template(self):
         score = MusicScore.objects.create()
         response = self.client.get(f'/music-library/{score.id}/')
@@ -115,6 +140,9 @@ class NewInstrumentViewUnitTest(TestCase):
             name='T-Bones In Swing',
             author='George Gershwin',
             editor='Molenaar Edition'
+        )
+        self.request.user = create_user_with_roles(
+            Role.MUSIC_LIBRARY_MODERATOR
         )
 
     def test_passes_POST_data_to_InstrumentForm(
@@ -166,6 +194,10 @@ class NewInstrumentViewUnitTest(TestCase):
 
 
 class InstrumentViewIntegratedTest(TestCase):
+
+    def setUp(self):
+        self.new_user = create_user_with_roles(Role.MUSIC_LIBRARY_MODERATOR)
+        self.client.force_login(self.new_user)
 
     def test_uses_instrument_template(self):
         score = MusicScore.objects.create()
@@ -219,6 +251,9 @@ class NewStandViewUnitTest(TestCase):
             music_score=self.music_score
         )
         self.request.POST['name'] = f'{self.instrument.name} 1'
+        self.request.user = create_user_with_roles(
+            Role.MUSIC_LIBRARY_MODERATOR
+        )
 
     def test_passes_POST_data_to_StandForm(
         self, mock_StandForm
@@ -279,6 +314,10 @@ class NewStandViewUnitTest(TestCase):
 
 @patch('music_library.views.Stand.score')
 class StandViewIntegratedTest(TestCase):
+
+    def setUp(self):
+        self.new_user = create_user_with_roles(Role.MUSIC_LIBRARY_MODERATOR)
+        self.client.force_login(self.new_user)
 
     def test_uses_stand_template(self, mock_stand_score):
         score = MusicScore.objects.create()
