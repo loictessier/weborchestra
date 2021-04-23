@@ -82,8 +82,8 @@ def auto_delete_file_on_Stand_delete(sender, instance, **kwargs):
     when corresponding `MediaFile` object is deleted.
     """
     if instance.score:
-        if os.path.isfile(instance.score.path):
-            os.remove(instance.score.path)
+        if os.path.isfile(instance.score.name):
+            os.remove(instance.score.name)
 
 
 @receiver(models.signals.pre_save, sender=Stand)
@@ -103,5 +103,5 @@ def auto_delete_file_on_Stand_change(sender, instance, **kwargs):
 
     new_file = instance.score
     if not old_file == new_file:
-        if os.path.isfile(old_file.path):
-            os.remove(old_file.path)
+        if os.path.isfile(old_file.name):
+            os.remove(old_file.name)
