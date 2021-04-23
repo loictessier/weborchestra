@@ -1,7 +1,9 @@
+import os
 from pathlib import Path
 
 from django.db import models
 from django.urls import reverse
+from django.dispatch import receiver
 
 
 def stand_file_path(instance, filename):
@@ -71,3 +73,35 @@ class Stand(models.Model):
 
     def __str__(self):
         return f'{self.name}'
+
+
+@receiver(models.signals.post_delete, sender=Stand)
+def auto_delete_file_on_Stand_delete(sender, instance, **kwargs):
+    """
+    Deletes file from filesystem
+    when corresponding `MediaFile` object is deleted.
+    """
+    if instance.score:
+        if os.path.isfile(instance.score.path):
+            os.remove(instance.score.path)
+
+
+@receiver(models.signals.pre_save, sender=Stand)
+def auto_delete_file_on_Stand_change(sender, instance, **kwargs):
+    """
+    Deletes old file from filesystem
+    when corresponding `MediaFile` object is updated
+    with new file.
+    """
+    if not instance.pk:
+        return False
+
+    try:
+        old_file = Stand.objects.get(pk=instance.pk).score
+    except Stand.DoesNotExist:
+        return False
+
+    new_file = instance.score
+    if not old_file == new_file:
+        if os.path.isfile(old_file.path):
+            os.remove(old_file.path)

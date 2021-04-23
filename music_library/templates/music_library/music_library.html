@@ -30,6 +30,16 @@
                                     </div>
                                     <span class="score_name col-lg-12 text-center">{{ score.name }}</span>
                                     <span class="score_author col-lg-12 text-center">{{ score.author }}</span>
+                                    {% if request.user.is_admin or request.user.is_music_library_moderator %}
+                                    <p class="score_actions col-lg-12 text-center">
+                                        <a class="delete_score" href="{% url 'music_library:delete_score' score_id=score.id %}">
+                                            <i class="fa fa-trash fa-2x"></i>
+                                        </a>
+                                        <a class="edit_score" href="{% url 'music_library:edit_score' score_id=score.id %}">
+                                            <i class="fa fa-pencil fa-2x"></i>
+                                        </a>
+                                    </p>
+                                    {% endif %}
                                 </a>
                             </div>
                         </div>

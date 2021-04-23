@@ -27,12 +27,20 @@ class ScoreForm(forms.models.ModelForm):
             }),
         }
 
-    def save(self):
-        return MusicScore.objects.create(
-            name=self.cleaned_data['name'],
-            author=self.cleaned_data['author'],
-            editor=self.cleaned_data['editor']
-        )
+    def save(self, score_id=None):
+        if score_id:
+            score = MusicScore.objects.get(id=score_id)
+            score.name = self.cleaned_data['name']
+            score.author = self.cleaned_data['author']
+            score.editor = self.cleaned_data['editor']
+            score.save()
+            return score
+        else:
+            return MusicScore.objects.create(
+                name=self.cleaned_data['name'],
+                author=self.cleaned_data['author'],
+                editor=self.cleaned_data['editor']
+            )
 
 
 class InstrumentForm(forms.models.ModelForm):
@@ -56,11 +64,17 @@ class InstrumentForm(forms.models.ModelForm):
             raise forms.ValidationError(DUPLICATE_INSTRUMENT_ERROR)
         return name
 
-    def save(self):
-        return Instrument.objects.create(
-            name=self.clean_name(),
-            music_score=self.music_score
-        )
+    def save(self, instrument_id=None):
+        if instrument_id:
+            instrument = Instrument.objects.get(id=instrument_id)
+            instrument.name = self.cleaned_data['name']
+            instrument.save()
+            return instrument
+        else:
+            return Instrument.objects.create(
+                name=self.clean_name(),
+                music_score=self.music_score
+            )
 
 
 class StandForm(forms.models.ModelForm):
@@ -80,13 +94,23 @@ class StandForm(forms.models.ModelForm):
 
     def clean_name(self):
         name = self.cleaned_data.get('name')
-        if self.instrument.stand_set.filter(name=name).exists():
+        if (
+            self.instrument.stand_set.filter(name=name).exists()
+            and self.instance.name != name
+        ):
             raise forms.ValidationError(DUPLICATE_STAND_ERROR)
         return name
 
-    def save(self):
-        return Stand.objects.create(
-            name=self.clean_name(),
-            score=self.cleaned_data['score'],
-            instrument=self.instrument
-        )
+    def save(self, stand_id=None):
+        if stand_id:
+            stand = Stand.objects.get(id=stand_id)
+            stand.name = self.cleaned_data['name']
+            stand.score = self.cleaned_data['score']
+            stand.save()
+            return stand
+        else:
+            return Stand.objects.create(
+                name=self.clean_name(),
+                score=self.cleaned_data['score'],
+                instrument=self.instrument
+            )

@@ -1,6 +1,12 @@
 {% extends "core/base.html" %}
 {% block title %} Int'Aire'Mezzo | Nouvelle partition {% endblock %}
-{% block page-title %}Ajouter un instrument{% endblock %}
+{% block page-title %}
+    {% if form.instance.pk is None %}
+        Ajouter un instrument
+    {% else %}
+        Modifier un instrument
+    {% endif %}
+{% endblock %}
 
 {% block content %}
     <section class="box-content">
@@ -24,7 +30,7 @@
                             <p style="color: red">{{ error }}</p>
                         {% endfor %}
                     {% endfor %}
-                    <button class="btn" type="submit">Enregistrer un instrument</button>
+                    <button class="btn" type="submit">Enregistrer</button>
                 </form>
             </div>
         </div>

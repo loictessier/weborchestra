@@ -29,6 +29,16 @@
                                         </span>
                                     </div>
                                     <span class="stand_name col-lg-12 text-center">{{ stand.name }}</span>
+                                    {% if request.user.is_admin or request.user.is_music_library_moderator %}
+                                    <p class="stand_actions col-lg-12 text-center">
+                                        <a href="{% url 'music_library:delete_stand' score_id=score.id instrument_id=instrument.id stand_id=stand.id %}">
+                                            <i class="fa fa-trash fa-2x"></i>
+                                        </a>
+                                        <a href="{% url 'music_library:edit_stand' score_id=score.id instrument_id=instrument.id stand_id=stand.id %}">
+                                            <i class="fa fa-pencil fa-2x"></i>
+                                        </a>
+                                    </p>
+                                    {% endif %}
                                 </a>
                             </div>
                         </div>

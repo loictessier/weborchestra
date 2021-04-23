@@ -44,7 +44,7 @@ class NewMusicScoreTest(FunctionalTest):
         # She is redirected to a form to create a music score
         self.wait_for(lambda: self.assertEqual(
             self.browser.find_element_by_tag_name('h1').text,
-            "Nouvelle partition".upper()
+            "Ajouter une partition".upper()
         ))
 
         # she is invited to complete the form

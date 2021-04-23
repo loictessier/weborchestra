@@ -1,6 +1,12 @@
 {% extends "core/base.html" %}
 {% block title %} Int'Aire'Mezzo | Nouvelle partition {% endblock %}
-{% block page-title %}Nouvelle partition{% endblock %}
+{% block page-title %}
+    {% if form.instance.pk is None %}
+        Ajouter une partition
+    {% else %}
+        Modifier une partition
+    {% endif %}
+{% endblock %}
 
 {% block content %}
     <section class="box-content">
@@ -24,7 +30,7 @@
                             <p style="color: red">{{ error }}</p>
                         {% endfor %}
                     {% endfor %}
-                    <button class="btn" type="submit">Créer la partition</button>
+                    <button class="btn" type="submit">Enregistrer</button>
                 </form>
             </div>
         </div>

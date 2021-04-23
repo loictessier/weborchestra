@@ -50,6 +50,32 @@ def view_score(request, score_id):
 @role_required(Role.ADMIN,
                Role.MUSIC_LIBRARY_MODERATOR,
                login_url='/')
+def delete_score(request, score_id):
+    score = MusicScore.objects.get(id=score_id)
+    score.delete()
+    return redirect('/music-library')
+
+
+@login_required(login_url='/auth/signin')
+@role_required(Role.ADMIN,
+               Role.MUSIC_LIBRARY_MODERATOR,
+               login_url='/')
+def edit_score(request, score_id):
+    score = MusicScore.objects.get(id=score_id)
+    if request.method == 'POST':
+        form = ScoreForm(data=request.POST, instance=score)
+        if form.is_valid():
+            score = form.save(score.id)
+            return redirect(str(score.get_absolute_url()))
+    else:
+        form = ScoreForm(instance=score)
+        return render(request, 'music_library/new_score.html', {'form': form})
+
+
+@login_required(login_url='/auth/signin')
+@role_required(Role.ADMIN,
+               Role.MUSIC_LIBRARY_MODERATOR,
+               login_url='/')
 def new_instrument(request, score_id):
     music_score = MusicScore.objects.get(id=score_id)
     form = InstrumentForm(music_score=music_score, data=request.POST)
@@ -74,6 +100,42 @@ def view_instrument(request, score_id, instrument_id):
     return render(request,
                   'music_library/instrument.html',
                   {'score': score, 'instrument': instrument, 'stands': stands})
+
+
+@login_required(login_url='/auth/signin')
+@role_required(Role.ADMIN,
+               Role.MUSIC_LIBRARY_MODERATOR,
+               login_url='/')
+def delete_instrument(request, score_id, instrument_id):
+    score = MusicScore.objects.get(id=score_id)
+    instrument = Instrument.objects.get(id=instrument_id)
+    instrument.delete()
+    return redirect(str(score.get_absolute_url()))
+
+
+@login_required(login_url='/auth/signin')
+@role_required(Role.ADMIN,
+               Role.MUSIC_LIBRARY_MODERATOR,
+               login_url='/')
+def edit_instrument(request, score_id, instrument_id):
+    score = MusicScore.objects.get(id=score_id)
+    instrument = Instrument.objects.get(id=instrument_id)
+    if request.method == 'POST':
+        form = InstrumentForm(
+            music_score=score,
+            data=request.POST,
+            instance=instrument
+        )
+        if form.is_valid():
+            instrument = form.save(instrument.id)
+            return redirect(str(instrument.get_absolute_url()))
+    else:
+        form = InstrumentForm(music_score=score, instance=instrument)
+        return render(
+            request,
+            'music_library/new_instrument.html',
+            {'form': form}
+        )
 
 
 @login_required(login_url='/auth/signin')
@@ -106,3 +168,43 @@ def view_stand(request, score_id, instrument_id, stand_id):
         request,
         'music_library/stand.html',
         {'score': score, 'instrument': instrument, 'stand': stand})
+
+
+@login_required(login_url='/auth/signin')
+@role_required(Role.ADMIN,
+               Role.MUSIC_LIBRARY_MODERATOR,
+               login_url='/')
+def delete_stand(request, score_id, instrument_id, stand_id):
+    instrument = Instrument.objects.get(id=instrument_id)
+    stand = Stand.objects.get(id=stand_id)
+    stand.delete()
+    return redirect(str(instrument.get_absolute_url()))
+
+
+@login_required(login_url='/auth/signin')
+@role_required(Role.ADMIN,
+               Role.MUSIC_LIBRARY_MODERATOR,
+               login_url='/')
+def edit_stand(request, score_id, instrument_id, stand_id):
+    instrument = Instrument.objects.get(id=instrument_id)
+    stand = Stand.objects.get(id=stand_id)
+    if request.method == 'POST':
+        form = StandForm(
+            instrument=instrument,
+            data=request.POST,
+            files=request.FILES,
+            instance=stand
+        )
+        if form.is_valid():
+            stand = form.save(stand.id)
+            return redirect(str(stand.get_absolute_url()))
+    else:
+        form = StandForm(
+            instrument=instrument,
+            instance=stand
+        )
+    return render(
+        request,
+        'music_library/new_stand.html',
+        {'form': form}
+    )
