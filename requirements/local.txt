@@ -5,3 +5,4 @@ selenium==3.141.0
 model-bakery==1.2.1
 Fabric3==1.14.post1
 django-override-storage==0.3.0
+coverage==5.5
