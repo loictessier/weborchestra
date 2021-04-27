@@ -6,3 +6,4 @@ exclude =
     admin.py,
     */migrations/*.py,
     */settings/*.py
+    wsgi.py
