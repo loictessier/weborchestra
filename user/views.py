@@ -6,6 +6,7 @@ from django.contrib.auth.views import PasswordResetConfirmView
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.utils.encoding import force_str, force_bytes
 from django.urls import reverse_lazy
+from django.contrib.auth.decorators import login_required
 
 from user.forms import (
     SignupForm, SigninForm,
@@ -13,7 +14,8 @@ from user.forms import (
     EditUserForm
 )
 from user.tokens import account_activation_token
-from user.models import Profile
+from user.models import Profile, Role
+from user.decorators import role_required
 
 logger = logging.getLogger(__name__)
 
@@ -114,11 +116,17 @@ def informations(request):
         {'user_uid': uid, 'user_token': token, 'roles': list(roles)})
 
 
+@login_required(login_url='/auth/signin')
+@role_required(Role.ADMIN,
+               login_url='/')
 def admin(request):
     users = Profile.objects.all()
     return render(request, 'admin/admin.html', {'users': list(users)})
 
 
+@login_required(login_url='/auth/signin')
+@role_required(Role.ADMIN,
+               login_url='/')
 def edit_user(request, id):
     user = Profile.objects.get(id=id)
     if request.method == 'POST':
