@@ -8,7 +8,7 @@ from django.http import HttpRequest
 
 from unittest.mock import patch
 
-from user.models import Profile
+from user.models import Profile, Role
 from user.views import (
     password_reset, signup, informations,
     admin, edit_user
@@ -18,6 +18,19 @@ from user.forms import (
     EMPTY_EMAIL_ERROR
 )
 from user.tokens import account_activation_token
+
+
+def _create_user_with_roles(roles):
+    new_user = Profile.objects.create_user(
+        'edith@example.com',
+        'edith@example.com',
+        'Django4321'
+    )
+    new_user.is_active = True
+    new_user.signup_confirmation = True
+    new_user.save()
+    new_user.roles.add(roles)
+    return new_user
 
 
 class SignupViewIntegratedTest(TestCase):
@@ -311,17 +324,11 @@ class InformationsViewUnitTest(TestCase):
 class AdminViewIntegratedTest(TestCase):
 
     def setUp(self):
-        self.new_user = Profile.objects.create_user(
-            'edith@example.com',
-            'edith@example.com',
-            'Django4321'
-        )
-        self.new_user.is_active = True
-        self.new_user.signup_confirmation = True
-        self.new_user.save()
         self.request = HttpRequest()
+        self.request.user = _create_user_with_roles(Role.ADMIN)
 
     def test_uses_admin_template(self):
+        self.client.force_login(self.request.user)
         response = self.client.get('/auth/admin')
         self.assertTemplateUsed(response, 'admin/admin.html')
 
@@ -344,15 +351,9 @@ class AdminViewIntegratedTest(TestCase):
 class EditUserUnitTest(TestCase):
 
     def setUp(self):
-        self.new_user = Profile.objects.create_user(
-            'edith@example.com',
-            'edith@example.com',
-            'Django4321'
-        )
-        self.new_user.is_active = True
-        self.new_user.signup_confirmation = True
-        self.new_user.save()
+        self.new_user = _create_user_with_roles(Role.ADMIN)
         self.request = HttpRequest()
+        self.request.user = self.new_user
         self.request.POST['email'] = 'edith-new-email@example.com'
         self.request.POST['roles'] = [2, 7]
 
